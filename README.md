@@ -1,7 +1,7 @@
-## 📚 Table of Contents
+# 📚 Table of Contents
 
 - [Overview](#-courier-and-parcel-management-system)
-- [Technology Used](#technology)
+- [Technology Used](#-technology)
 - [User Roles & Features](#-features)
 - [Backend Architecture](#-backend)
 - [Frontend Overview](#-frontend)
@@ -9,6 +9,7 @@
 - [Deliverables](#-deliverables)
 - [Evaluation Criteria](#-evaluation-criteria)
 - [Folder Structure](#-folder-structure-suggestion)
+- [Installation locally](#-installation)
 
 
 
@@ -166,6 +167,13 @@ The project is built using the **MERN Stack** with additional tools and APIs for
 ---
 
 > 💡 _This tech stack allows real-time communication, efficient parcel tracking, and a modular codebase for scalability._
+
+<br/>
+<br/>
+
+# Installation
+
+Local installation guide
 
 
 
