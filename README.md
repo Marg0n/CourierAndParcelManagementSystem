@@ -1,3 +1,18 @@
+## 📚 Table of Contents
+
+- [Overview](#-courier-and-parcel-management-system)
+- [Technology Used](#technology)
+- [User Roles & Features](#-features)
+- [Backend Architecture](#-backend)
+- [Frontend Overview](#-frontend)
+- [Advanced Features](#-advanced-bonus-features)
+- [Deliverables](#-deliverables)
+- [Evaluation Criteria](#-evaluation-criteria)
+- [Folder Structure](#-folder-structure-suggestion)
+
+
+
+
 # 🚚 Courier and Parcel Management System
 
 A full-stack MERN application for managing courier and parcel logistics. This system enables customers to book parcel pickups, allows agents to manage deliveries, and provides admins with a comprehensive dashboard for system monitoring and analytics.
@@ -111,14 +126,48 @@ README.md       # Reports and documentation
 
 ---
 
+> 🔧 Built with the MERN stack to simulate real-world logistics challenges.
+
 <br/>
 <br/>
 
 # 🧑🏻‍💻 Technology
 
+The project is built using the **MERN Stack** with additional tools and APIs for real-time tracking, mapping, and performance.
+
+### 🖥️ Frontend
+- **React.js** – UI framework for building responsive web interfaces
+- **Socket.IO (Client)** – Real-time communication with the server
+- **Google Maps JavaScript API** – For tracking and optimized route display
+- **Axios** – For API communication
+- **React Router** – For routing/navigation
+- **Bootstrap / Tailwind CSS** – For UI styling (choose whichever you used)
+
+### 🖧 Backend
+- **Node.js + Express.js** _or_ **NestJS** – Server-side application logic and REST APIs
+- **Socket.IO (Server)** – Real-time updates for parcel status
+- **JWT (JSON Web Tokens)** – Authentication and authorization
+- **Mongoose / TypeORM** – ORM for interacting with MongoDB or PostgreSQL
+- **MongoDB / PostgreSQL** – Database for storing users, parcels, agents, etc.
+- **Cloudinary / AWS S3 (optional)** – For image uploads if applicable
+
+### 🗺️ APIs & Integrations
+- **Google Maps API** – Geolocation, route optimization, and live tracking
+- **QR Code Generator Library** – For creating parcel labels
+- **Barcode Scanner Library** – Used by delivery agents to confirm actions
+- **Email/SMS API (e.g., Twilio, SendGrid)** – For notifications (bonus)
+
+### 🛠️ Dev Tools
+- **Postman** – For API testing
+- **Git & GitHub** – Version control and collaboration
+- **Vercel / Netlify** – Hosting frontend
+- **Render / Railway / Heroku** – Hosting backend (or any preferred alternative)
+
 ---
 
-> 🔧 Built with the MERN stack to simulate real-world logistics challenges.
+> 💡 _This tech stack allows real-time communication, efficient parcel tracking, and a modular codebase for scalability._
+
+
 
 <!-- 
 ##📄 Final PDF Report
