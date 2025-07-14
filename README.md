@@ -1,7 +1,7 @@
 ## 📚 Table of Contents
 
 - [Overview](#-courier-and-parcel-management-system)
-- [Technology Used](#technology)
+- [Technology Used](#-technology)
 - [User Roles & Features](#-features)
 - [Backend Architecture](#-backend)
 - [Frontend Overview](#-frontend)
