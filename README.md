@@ -174,7 +174,15 @@ The project is built using the **MERN Stack** with additional tools and APIs for
 
 # Installation
 
-Local installation guide
+Local installation guide:
+
+## Backend
+
+- Just run this command. It will install *cors*, *mongodb*, *dotenv*, *nodemon*, *jsonwebtoken*, *express*, *cookie-parser*, *bcryptjs* in the project
+
+  ```bash
+  npm i
+  ```
 
 
 
