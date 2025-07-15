@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "Margon",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",

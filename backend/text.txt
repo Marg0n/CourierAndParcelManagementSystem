@@ -1,0 +1,28 @@
+#! DB
+DB_USER=CommonUser
+DB_PASS=commonpass
+DB_NAME=courierAndParcelDB
+
+#! JWT
+JWT_ACCESS_SECRET =acbf1059f326eae7dc12a739c0c669beb12f5548032dc41cfed94cecbca7cfed
+JWT_REFRESH_SECRET=9d372d253af23cbdadc56b39478b9aec75ac74c8826459a15eb7c1229eded9375f0bc9f8952bbd0af5aaa2925b8b6a387da32f23f34a23a2247321e915dcc48b
+JWT_ACCESS_EXPIRES_IN=1d
+JWT_REFRESH_EXPIRES_IN=365d
+
+#! OTHERS
+NODE_ENV=production
+PORT=5000
+
+
+BCRYPT_SALT_ROUNDS=12
+# DEFAULT_PASS=medicine!@#
+# RESET_PASS_UI_LINK=http://localhost:5000
+# CLOUDINARY_CLOUD_NAME=dyvwz60
+# CLOUDINARY_API_KEY=566492638533417
+# CLOUDINARY_API_SECRET=HDX9LWecJm3qk7hcm_40HM4Us4g
+# API_BASE_URL='https://bicycle-backend-seven.vercel.app'
+# STORE_ID="erger67f7cdd256d33"
+# STORE_PASS="erger67f7cdd256d33@ssl"
+# IS_LIVE = "false"
+# FRONTEND_BASE_URL='https://bicyclestore.netlify.app'
+FRONTEND_BASE_URL=http://localhost:3000
