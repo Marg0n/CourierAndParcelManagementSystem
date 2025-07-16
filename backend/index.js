@@ -132,7 +132,7 @@ async function run() {
 
 
         //* ==================================
-        //* Admin verify
+        //* Admin verify middleware
         //* ==================================
 
         const verifyAdmin = async (req, res, next) => {
@@ -150,7 +150,7 @@ async function run() {
         };
 
         //* ==================================
-        //* Delivery Agent verify
+        //* Delivery Agent verify middleware
         //* ==================================
 
         const verifyDeliveryAgent = async (req, res, next) => {
@@ -160,13 +160,13 @@ async function run() {
             const user = await usersCollection.findOne(query);
             const isDeliveryAgent = user?.role === "Delivery Agent";
 
-            if(!isDeliveryAgent) return res.status(403).send({ message: "Not a Delivery Agent!"});
+            if (!isDeliveryAgent) return res.status(403).send({ message: "Not a Delivery Agent!" });
 
             next();
         }
 
         //* ==================================
-        //* Customer verify
+        //* Customer verify middleware
         //* ==================================
 
         const verifyCustomer = async (req, res, next) => {
@@ -176,10 +176,44 @@ async function run() {
             const user = await usersCollection.findOne(query);
             const isCustomer = user?.role === "Customer";
 
-            if(!isCustomer) return res.status(403).send({ message: "Not a Customer!"});
+            if (!isCustomer) return res.status(403).send({ message: "Not a Customer!" });
 
             next();
         }
+
+        //* ==================================
+        //* Add an User / Users registration
+        //* ==================================
+
+        app.post("/new-user", async (req, res) => {
+            try {
+                const newUser = req.body;
+
+                //? check if the user exit
+                const query = await usersCollection.findOne({ email: newUser?.email });
+
+                if (!query) {
+                    const result = await usersCollection.insertOne(newUser);
+                    res.send(result);
+                }
+                else {
+                    const mail = newUser?.email;
+                    const results = await usersCollection.find({ email: mail }).toArray();
+                    res.send(results);
+                }
+            }
+            catch(err) {
+                // If an error occurs during execution, catch it here
+                console.error("Error updating user status:", err);
+                // Send an error response to the client
+                res
+                    .status(500)
+                    .json({ 
+                        message: "Internal server error during registration" || err?.message,
+                        stack: err || " "
+                    });
+            }
+        })
 
         //* ===================================
         //* DB default function
