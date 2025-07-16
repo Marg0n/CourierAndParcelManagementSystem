@@ -131,6 +131,56 @@ async function run() {
         const usersCollection = connectionDB.collection("users");
 
 
+        //* ==================================
+        //* Admin verify
+        //* ==================================
+
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            // console.log('from verify admin -->', email);
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            const isAdmin = user?.role === "Admin";
+
+            if (!isAdmin) {
+                return res.status(403).send({ message: "Unauthorized!! Not an Admin!" });
+            }
+
+            next();
+        };
+
+        //* ==================================
+        //* Delivery Agent verify
+        //* ==================================
+
+        const verifyDeliveryAgent = async (req, res, next) => {
+            const email = req.decoded.email;
+
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            const isDeliveryAgent = user?.role === "Delivery Agent";
+
+            if(!isDeliveryAgent) return res.status(403).send({ message: "Not a Delivery Agent!"});
+
+            next();
+        }
+
+        //* ==================================
+        //* Customer verify
+        //* ==================================
+
+        const verifyCustomer = async (req, res, next) => {
+            const email = req.decoded.email;
+
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            const isCustomer = user?.role === "Customer";
+
+            if(!isCustomer) return res.status(403).send({ message: "Not a Customer!"});
+
+            next();
+        }
+
         //* ===================================
         //* DB default function
         //* ===================================
