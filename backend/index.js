@@ -198,9 +198,9 @@ async function run() {
                     res.send(result);
                 }
                 else {
-                    const mail = newUser?.email;
-                    const results = await usersCollection.find({ email: mail }).toArray();
-                    res.send(results);
+                    // const mail = newUser?.email;
+                    // const results = await usersCollection.find({ email: mail }).toArray();
+                    return res.send({message: "User already exists!"});
                 }
             }
             catch(err) {
