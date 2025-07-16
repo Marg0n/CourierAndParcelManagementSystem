@@ -90,7 +90,7 @@ app.get("/logout", async (req, res) => {
 //* MongoDB connection
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.pqvcpai.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.pqvcpai.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
 
 //? Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -106,6 +106,7 @@ const client = new MongoClient(uri, {
 //* ===================================
 
 app.get("/", (req, res) => {
+    // console.log("MongoDB URI:", uri);
     res.send("Server is 🏃🏻‍➡️!!");
 });
 
@@ -203,9 +204,9 @@ async function run() {
                 }
             }
             catch(err) {
-                // If an error occurs during execution, catch it here
+                //? If an error occurs during execution, catch it here
                 console.error("Error updating user status:", err);
-                // Send an error response to the client
+                
                 res
                     .status(500)
                     .json({ 
