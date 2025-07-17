@@ -6,8 +6,9 @@ import express from "express"
 import cors from "cors"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv";
-import { MongoClient, ServerApiVersion } from "mongodb";
 dotenv.config();
+import { MongoClient, ServerApiVersion } from "mongodb";
+import bcrypt from "bcryptjs";
 
 
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,33 +189,105 @@ async function run() {
 
         app.post("/registration", async (req, res) => {
             try {
-                const newUser = req.body;
+                const newUser = req?.body;
 
                 //? check if the user exit
-                const query = await usersCollection.findOne({ email: newUser?.email });
+                const existingUser = await usersCollection.findOne({ email: newUser?.email });
 
-                if (!query) {
-                    const result = await usersCollection.insertOne(newUser);
-                    res.send(result);
+                if (existingUser) {
+                    return res.send({ message: "User already exists!" });
                 }
-                else {
-                    // const mail = newUser?.email;
-                    // const results = await usersCollection.find({ email: mail }).toArray();
-                    return res.send({message: "User already exists!"});
-                }
+
+                //? Get password and PEPPER
+                const plainPassword = newUser?.password;
+                const pepper = process.env.BCRYPT_PEPPER || "";
+
+                //? Parse salt rounds from env, with fallback
+                const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+
+                //? Generate salt and hash password
+                const hashedPassword = await bcrypt.hash(plainPassword + pepper, saltRounds);
+
+                //? Replacing plain password with hashed password
+                newUser.password = hashedPassword;
+
+                const result = await usersCollection.insertOne(newUser);
+                res.send(result);
             }
-            catch(err) {
+            catch (err) {
                 //? If an error occurs during execution, catch it here
                 console.error("Error updating user status:", err);
-                
+
                 res
                     .status(500)
-                    .json({ 
+                    .json({
                         message: "Internal server error during registration" || err?.message,
                         stack: err || " "
                     });
             }
         })
+
+        //* ==================================
+        //* User Login 
+        //* ==================================
+
+        app.post("/login", async (req, res) => {
+            try {
+                const { email, password } = req?.body; 
+                
+                //? check
+                if (!email || !password) {
+                    return res.status(400).json({ message: "Email and password are required." });
+                }
+
+                //? find user
+                const user = await usersCollection.findOne({ email });
+
+                if (!user) {
+                    return res.status(401).json({ message: "Invalid email or password." });
+                }
+
+                //? validate password
+                const pepper = process.env.BCRYPT_PEPPER || "";
+                const isPasswordValid = await bcrypt.compare(password + pepper, user?.password);
+
+                if (!isPasswordValid) {
+                    return res.status(401).json({ message: "Invalid email or password." });
+                }
+
+                //? Prepare payload
+                const payload = {
+                    id: user._id,
+                    email: user.email,
+                    role: user.role
+                };
+
+                //? Generate tokens
+                const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+                    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1d"
+                });
+
+                const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+                    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "365d"
+                });
+
+                res.status(200).json({
+                    message: "Login successful",
+                    accessToken,
+                    refreshToken
+                });
+
+            } catch (err) {
+                console.error("Login error:", err);
+                res.status(500).json({ message: "Internal server error", error: err?.message });
+            }
+        })
+        
+        //* ==================================
+        //* Get User Info 
+        //* ==================================
+
+        app.get("/get-user",async (req, res) => {})
 
         //* ===================================
         //* DB default function
