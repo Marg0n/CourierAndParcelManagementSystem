@@ -227,6 +227,62 @@ async function run() {
             }
         })
 
+        //* ==================================
+        //* User Login 
+        //* ==================================
+
+        app.post("/login", async (req, res) => {
+            try {
+                const { email, password } = req?.body; 
+                
+                //? check
+                if (!email || !password) {
+                    return res.status(400).json({ message: "Email and password are required." });
+                }
+
+                //? find user
+                const user = await usersCollection.findOne({ email });
+
+                if (!user) {
+                    return res.status(401).json({ message: "Invalid email or password." });
+                }
+
+                //? validate password
+                const pepper = process.env.BCRYPT_PEPPER || "";
+                const isPasswordValid = await bcrypt.compare(password + pepper, user?.password);
+
+                if (!isPasswordValid) {
+                    return res.status(401).json({ message: "Invalid email or password." });
+                }
+
+                //? Prepare payload
+                const payload = {
+                    id: user._id,
+                    email: user.email,
+                    role: user.role
+                };
+
+                //? Generate tokens
+                const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+                    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1d"
+                });
+
+                const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+                    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "365d"
+                });
+
+                res.status(200).json({
+                    message: "Login successful",
+                    accessToken,
+                    refreshToken
+                });
+
+            } catch (err) {
+                console.error("Login error:", err);
+                res.status(500).json({ message: "Internal server error", error: err?.message });
+            }
+        })
+
         //* ===================================
         //* DB default function
         //* ===================================
