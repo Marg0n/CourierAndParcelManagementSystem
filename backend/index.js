@@ -186,7 +186,7 @@ async function run() {
         //* Add an User / Users registration
         //* ==================================
 
-        app.post("/new-user", async (req, res) => {
+        app.post("/registration", async (req, res) => {
             try {
                 const newUser = req.body;
 

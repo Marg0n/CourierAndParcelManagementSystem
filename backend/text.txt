@@ -25,4 +25,4 @@ BCRYPT_SALT_ROUNDS=12
 # STORE_PASS="erger67f7cdd256d33@ssl"
 # IS_LIVE = "false"
 # FRONTEND_BASE_URL='https://bicyclestore.netlify.app'
-FRONTEND_BASE_URL=http://localhost:3000
+# FRONTEND_BASE_URL=http://localhost:3000
