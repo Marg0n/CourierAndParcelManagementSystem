@@ -282,6 +282,12 @@ async function run() {
                 res.status(500).json({ message: "Internal server error", error: err?.message });
             }
         })
+        
+        //* ==================================
+        //* Get User Info 
+        //* ==================================
+
+        app.get("/get-user",async (req, res) => {})
 
         //* ===================================
         //* DB default function
