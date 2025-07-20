@@ -24,7 +24,7 @@ const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
+    .min(4, { message: "Password must be at least 4 characters." }),
 });
 
 export function Login() {
@@ -43,28 +43,35 @@ export function Login() {
   //* submit
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData?.message || "Login failed");
-      }
-
+      
       const result = await response.json();
-
+      console.log(response)
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Login failed");
+      }
+  
+      // ✅ Store tokens securely (use HttpOnly cookies in production ideally)
+      localStorage.setItem("accessToken", result.accessToken);
+      localStorage.setItem("refreshToken", result.refreshToken);
+  
       toast.success("Login successful", {
-        description: `Welcome, ${result?.username || data.email}`,
+        description: result.message,
       });
+  
+      // ✅ Optional: redirect to dashboard or protected page
+      // navigate("/dashboard"); // if using react-router
     } catch (error: any) {
       toast.error("Login failed", {
         description: error.message,
       });
     }
-  }
+  }  
 
   return (
     <div className="flex justify-center items-center h-screen">
