@@ -323,6 +323,48 @@ async function run() {
             res.send(result);
         });
 
+        //* ===================================
+        //* Assign an Agent to Parcel (Admin)
+        //* ===================================
+
+        app.put("/parcels/:id/assign", verifyToken, verifyAdmin, async (req, res) => {
+            const { id } = req.params;
+            const { agentEmail } = req.body;
+
+            const result = await parcelsCollection.updateOne(
+                { _id: new ObjectId(id) },
+                {
+                    $set: {
+                        agentEmail,
+                        status: "Assigned"
+                    }
+                }
+            );
+
+            res.send(result);
+        });
+
+        //* ===================================
+        //* Agent Updates Parcel Status
+        //* ===================================
+
+        app.put("/parcels/:id/status", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const allowedStatuses = ["Picked Up", "In Transit", "Delivered", "Failed"];
+            if (!allowedStatuses.includes(status)) return res.status(400).send({ message: "Invalid status" });
+
+            const result = await parcelsCollection.updateOne(
+                { _id: new ObjectId(id), agentEmail: req.decoded.email },
+                {
+                    $set: { status }
+                }
+            );
+
+            res.send(result);
+        });
+
 
         // await client.db("admin").command({ ping: 1 });
         console.log(
