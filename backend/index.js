@@ -310,6 +310,19 @@ async function run() {
             res.send(result);
         });
 
+        //* ===================================
+        //* Get Bookings for Customer
+        //* ===================================
+
+        app.get("/parcels/myBooking", verifyToken, verifyCustomer, async (req, res) => {
+            const email = req.decoded.email;
+            const result = await parcelsCollection
+                .find({ customerEmail: email })
+                .toArray();
+
+            res.send(result);
+        });
+
 
         // await client.db("admin").command({ ping: 1 });
         console.log(
