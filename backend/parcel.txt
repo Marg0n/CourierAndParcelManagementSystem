@@ -1,0 +1,15 @@
+//  Parcel Schema & Collection
+{
+  _id,
+  customerEmail,
+  pickupAddress,
+  deliveryAddress,
+  parcelType, // e.g. "Document", "Box", "Fragile"
+  size,       // e.g. "Small", "Medium", "Large"
+  paymentType, // COD / Prepaid
+  status,     // "Pending", "Assigned", "Picked Up", "In Transit", "Delivered", "Failed"
+  agentEmail: null | string,
+  currentLocation: { lat, lng },
+  trackingHistory: [{ lat, lng, timestamp }],
+  createdAt
+}

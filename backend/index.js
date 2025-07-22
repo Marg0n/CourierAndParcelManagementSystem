@@ -131,6 +131,7 @@ async function run() {
         const connectionDB = client.db(`${process.env.DB_NAME}`);
 
         const usersCollection = connectionDB.collection("users");
+        const parcelsCollection = connectionDB.collection("parcels");
 
 
         //* ==================================
@@ -233,8 +234,8 @@ async function run() {
 
         app.post("/login", async (req, res) => {
             try {
-                const { email, password } = req?.body; 
-                
+                const { email, password } = req?.body;
+
                 //? check
                 if (!email || !password) {
                     return res.status(400).json({ message: "Email and password are required." });
@@ -282,17 +283,33 @@ async function run() {
                 res.status(500).json({ message: "Internal server error", error: err?.message });
             }
         })
-        
+
         //* ==================================
         //* Get User Info 
         //* ==================================
 
-        app.get("/get-user",async (req, res) => {})
+        app.get("/get-user", async (req, res) => { })
 
         //* ===================================
         //* DB default function
         //* ===================================
+
         app.use("/user", async (req, res) => { });
+
+        //* ===================================
+        //* Create Parcel API (Customer only)
+        //* ===================================
+
+        app.post("/parcels", verifyToken, verifyCustomer, async (req, res) => {
+            const parcel = req.body;
+            parcel.status = "Pending";
+            parcel.createdAt = new Date();
+            parcel.customerEmail = req.decoded.email;
+
+            const result = await parcelsCollection.insertOne(parcel);
+            res.send(result);
+        });
+
 
         // await client.db("admin").command({ ping: 1 });
         console.log(
