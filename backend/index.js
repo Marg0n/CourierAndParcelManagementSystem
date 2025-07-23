@@ -253,7 +253,7 @@ async function run() {
                 const isPasswordValid = await bcrypt.compare(password + pepper, user?.password);
 
                 if (!isPasswordValid) {
-                    return res.status(401).json({ message: "Invalid email or password." });
+                return res.status(401).json({ message: "Invalid email or password!" });
                 }
 
                 //? Prepare payload
@@ -289,12 +289,6 @@ async function run() {
         //* ==================================
 
         app.get("/get-user", async (req, res) => { })
-
-        //* ===================================
-        //* DB default function
-        //* ===================================
-
-        app.use("/user", async (req, res) => { });
 
         //* ===================================
         //* Create Parcel API (Customer only)
