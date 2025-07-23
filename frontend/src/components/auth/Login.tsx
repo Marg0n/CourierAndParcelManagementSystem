@@ -48,22 +48,22 @@ export function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      
+
       const result = await response.json();
-      console.log(response)
-  
+      console.log(response);
+
       if (!response.ok) {
         throw new Error(result.message || "Login failed");
       }
-  
+
       // ✅ Store tokens securely (use HttpOnly cookies in production ideally)
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
-  
+
       toast.success("Login successful", {
         description: result.message,
       });
-  
+
       // ✅ Optional: redirect to dashboard or protected page
       // navigate("/dashboard"); // if using react-router
     } catch (error: any) {
@@ -71,7 +71,7 @@ export function Login() {
         description: error.message,
       });
     }
-  }  
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -125,6 +125,14 @@ export function Login() {
               )}
             />
 
+            <div>
+              <Button type="submit" className="w-full">
+                Log In
+              </Button>
+              <Button type="submit" className="w-full">
+                Log In
+              </Button>
+            </div>
             <Button type="submit" className="w-full">
               Log In
             </Button>
