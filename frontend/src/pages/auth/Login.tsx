@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 //* Validation schema
 const FormSchema = z.object({
@@ -30,6 +30,11 @@ const FormSchema = z.object({
 export function Login() {
   //* states
   const [showPassword, setShowPassword] = useState(false);
+
+  //* Navigation
+  const navigate = useNavigate();
+  const location = useLocation();
+  const whereTo = location?.state || '/dashboard';
 
   //* Default values
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -56,7 +61,7 @@ export function Login() {
         throw new Error(result.message || "Login failed");
       }
 
-      // ✅ Store tokens securely (use HttpOnly cookies in production ideally)
+      //* Store tokens securely
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
 
@@ -64,14 +69,21 @@ export function Login() {
         description: result.message,
       });
 
-      // ✅ Optional: redirect to dashboard or protected page
-      // navigate("/dashboard"); // if using react-router
+      //* redirect to dashboard or protected page
+      // navigate(whereTo, { replace: true });
     } catch (error: any) {
       toast.error("Login failed", {
         description: error.message,
       });
     }
   }
+
+  //* Quick login
+  const handleQuickLogin = async (email: string, password: string) => {
+    form.setValue("email", email);
+    form.setValue("password", password);
+    await form.handleSubmit(onSubmit)(); //? Auto-login
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -125,22 +137,43 @@ export function Login() {
               )}
             />
 
-            <div>
-              <Button type="submit" className="w-full">
-                Log In
-              </Button>
-              <Button type="submit" className="w-full">
-                Log In
-              </Button>
-            </div>
             <Button type="submit" className="w-full">
               Log In
             </Button>
+
+            {/* Quick login buttons */}
+            <div className="flex flex-col gap-2">
+              <h3 className="text-center font-semibold text-base font-serif">Quick Login Options</h3>
+              <Button
+                type="button"
+                variant="outline"
+                className="hover:bg-blue-300 transition-colors duration-300 ease-in-out"
+                onClick={() => handleQuickLogin("tony@mail.com", "1234")}
+              >
+                Login as Admin
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="hover:bg-blue-300 transition-colors duration-300 ease-in-out"
+                onClick={() => handleQuickLogin("nina@mail.com", "1234")}
+              >
+                Login as Delivery Agent
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="hover:bg-blue-300 transition-colors duration-300 ease-in-out"
+                onClick={() => handleQuickLogin("mina@mail.com", "1234")}
+              >
+                Login as Customer
+              </Button>
+            </div>
           </form>
         </Form>
 
         <p className="text-center text-sm mt-4">
-          Don’t have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link to="/registration" className="text-blue-500 hover:underline">
             Register here
           </Link>

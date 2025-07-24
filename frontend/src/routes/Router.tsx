@@ -1,5 +1,5 @@
-import { Login } from "@/components/auth/Login";
-import { Registration } from "@/components/auth/Registration";
+import { Login } from "@/pages/auth/Login";
+import { Registration } from "@/pages/auth/Registration";
 import { createBrowserRouter } from "react-router-dom";
 
 const Router = createBrowserRouter([
