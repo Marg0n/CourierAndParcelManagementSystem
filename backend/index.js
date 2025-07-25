@@ -285,10 +285,53 @@ async function run() {
         })
 
         //* ==================================
-        //* Get User Info 
+        //* Get Parcel Details by ID 
         //* ==================================
 
-        app.get("/get-user", async (req, res) => { })
+        app.get("/parcels/:id", verifyToken, async (req, res) => {
+            const { id } = req.params;
+            const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
+            res.send(parcel);
+        });        
+
+        //* ==================================
+        //* Get All Parcels (Admin) 
+        //* ==================================
+
+        app.get("/admin/parcels", verifyToken, verifyAdmin, async (req, res) => {
+            const result = await parcelsCollection.find().toArray();
+            res.send(result);
+        });
+        
+        //* ==================================
+        //* Delivery Agent – Get Assigned Parcels 
+        //* ==================================
+
+        app.get("/agent/parcels", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            const email = req.decoded.email;
+            const result = await parcelsCollection.find({ agentEmail: email }).toArray();
+            res.send(result);
+        });
+        
+        //* ==================================
+        //* Get User Details
+        //* ==================================
+
+        app.get("/get-user", verifyToken, async (req, res) => {
+            try {
+                const email = req.decoded.email;
+        
+                const user = await usersCollection.findOne({ email }, { projection: { password: 0 } }); //! excluding password for privacy
+                if (!user) {
+                    return res.status(404).json({ message: "User not found" });
+                }
+        
+                res.send(user);
+            } catch (err) {
+                console.error("Error fetching user:", err);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });        
 
         //* ===================================
         //* Create Parcel API (Customer only)
