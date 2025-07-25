@@ -402,6 +402,103 @@ async function run() {
             res.send(result);
         });
 
+        //* ===================================
+        //* Get Parcel by ID (for tracking / detail view)
+        //* ===================================
+
+        app.get("/parcels/:id", verifyToken, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
+        
+                if (!parcel) return res.status(404).send({ message: "Parcel not found" });
+        
+                res.send(parcel);
+            } catch (err) {
+                console.error("Error fetching parcel:", err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });
+
+        //* ===================================
+        //* Admin: Get All Parcels
+        //* ===================================
+
+        app.get("/admin/parcels", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const result = await parcelsCollection.find().toArray();
+                res.send(result);
+            } catch (err) {
+                console.error("Error fetching parcels:", err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });        
+
+        //* ===================================
+        //* Admin: Get All Users
+        //* ===================================
+
+        app.get("/admin/users", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
+                res.send(users);
+            } catch (err) {
+                console.error("Error fetching users:", err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });        
+
+        //* ===================================
+        //* Agent: Get Assigned Parcels
+        //* ===================================
+
+        app.get("/agent/parcels", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            try {
+                const email = req.decoded.email;
+                const result = await parcelsCollection.find({ agentEmail: email }).toArray();
+                res.send(result);
+            } catch (err) {
+                console.error("Error fetching assigned parcels:", err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });        
+        
+        //* ===================================
+        //* Agent: Update Current Location (for real-time tracking)
+        //* ===================================
+
+        app.put("/parcels/:id/location", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const { lat, lng } = req.body;
+        
+                const timestamp = new Date();
+                const locationUpdate = {
+                    lat,
+                    lng,
+                    timestamp
+                };
+        
+                const result = await parcelsCollection.updateOne(
+                    { _id: new ObjectId(id), agentEmail: req.decoded.email },
+                    {
+                        $set: { currentLocation: { lat, lng } },
+                        $push: { trackingHistory: locationUpdate }
+                    }
+                );
+        
+                res.send(result);
+            } catch (err) {
+                console.error("Error updating location:", err);
+                res.status(500).send({ message: "Server error" });
+            }
+        });        
+
+        //* ===================================
+        //* Agent Updates Parcel Status
+        //* ===================================
+
+
 
         // await client.db("admin").command({ ping: 1 });
         console.log(
