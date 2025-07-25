@@ -574,9 +574,10 @@ async function run() {
         });
 
         //* ===================================
-        //* Export Bookings as CSV
+        //* Export Bookings as PDF
         //* ===================================
 
+        
 
 
         // await client.db("admin").command({ ping: 1 });
