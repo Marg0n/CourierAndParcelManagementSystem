@@ -18,3 +18,103 @@
   Barcode,
   createdAt
 }
+
+
+app.get("/agent/export-pdf", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            try {
+                const parcels = await parcelsCollection.find().toArray();
+
+                if (!parcels.length) {
+                    return res.status(404).send({ message: "No parcels found to export" });
+                }
+
+                const doc = new PDFDocument({ margin: 40, size: "A4" });
+                const bufferStream = new stream.PassThrough();
+                res.setHeader("Content-Disposition", "attachment; filename=parcel_bookings.pdf");
+                res.setHeader("Content-Type", "application/pdf");
+                doc.pipe(bufferStream);
+                bufferStream.pipe(res);
+
+                //? === Logo & Header ===
+                const logoPath = path.join(process.cwd(), "logo.png");
+                if (fs.existsSync(logoPath)) {
+                    doc.image(logoPath, 40, 40, { width: 100 });
+                }
+
+                doc.fontSize(20).text("Courier & Parcel Booking Report", 160, 50);
+                doc.moveDown(3);
+
+                //? === Table Header ===
+                const tableTop = 130;
+                const rowHeight = 25;
+
+                const headers = [
+                    "Customer",
+                    "Contact",
+                    "Pickup",
+                    "Delivery",
+                    "Type",
+                    "Size",
+                    "Payment",
+                    "Price",
+                    "Status",
+                    "Agent"
+                ];
+
+                const columnWidths = [80, 70, 70, 70, 50, 40, 60, 40, 60, 60];
+                let startX = 40;
+
+                //? Draw header
+                headers.forEach((header, i) => {
+                    doc
+                        .font("Helvetica-Bold")
+                        .fontSize(10)
+                        .rect(startX, tableTop, columnWidths[i], rowHeight)
+                        .stroke()
+                        .text(header, startX + 5, tableTop + 7, { width: columnWidths[i] - 10 });
+                    startX += columnWidths[i];
+                });
+
+                //? === Table Rows ===
+                let rowY = tableTop + rowHeight;
+
+                parcels.forEach((p, index) => {
+                    let x = 40;
+                    const row = [
+                        p.customerEmail,
+                        p.contact || "-",
+                        p.pickupAddress || "-",
+                        p.deliveryAddress,
+                        p.parcelType,
+                        p.size || "-",
+                        p.paymentType,
+                        p.price?.toString() || "0",
+                        p.status,
+                        p.agentEmail || "-"
+                    ];
+
+                    row.forEach((cell, i) => {
+                        doc
+                            .font("Helvetica")
+                            .fontSize(8)
+                            .rect(x, rowY, columnWidths[i], rowHeight)
+                            .stroke()
+                            .text(cell, x + 3, rowY + 7, { width: columnWidths[i] - 6, ellipsis: true });
+                        x += columnWidths[i];
+                    });
+
+                    rowY += rowHeight;
+
+                    //? Page break logic (optional for large data)
+                    if (rowY > 750) {
+                        doc.addPage();
+                        rowY = 50;
+                    }
+                });
+
+                doc.end();
+            } catch (err) {
+                console.error("PDF export error:", err);
+                res.status(500).send({ message: "Failed to export PDF" });
+            }
+        });

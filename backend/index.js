@@ -9,7 +9,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import { MongoClient, ServerApiVersion } from "mongodb";
 import bcrypt from "bcryptjs";
+//? csv
 import { Parser } from "json2csv";
+//? pdf
+import PDFDocument from "pdfkit";
+import stream from "stream";
+import fs from "fs";
+import path from "path";
 
 
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -536,7 +542,7 @@ async function run() {
         //* Export Bookings as CSV
         //* ===================================
 
-        app.get("/admin/export-csv", verifyToken, verifyAdmin, async (req, res) => {
+        app.get("/agent/export-csv", verifyToken, verifyDeliveryAgent, async (req, res) => {
             try {
                 const parcels = await parcelsCollection.find().toArray();
 
@@ -575,9 +581,101 @@ async function run() {
 
         //* ===================================
         //* Export Bookings as PDF
-        //* ===================================
+        //* ===================================        
 
+        app.get("/agent/export-pdf", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            try {
+                const agentEmail = req.decoded.email;
         
+                //? Only parcels assigned to this delivery agent
+                const parcels = await parcelsCollection.find({ agentEmail }).toArray();
+        
+                if (!parcels.length) {
+                    return res.status(404).send({ message: "No parcels assigned to you." });
+                }
+        
+                const doc = new PDFDocument({ margin: 40, size: "A4" });
+                const bufferStream = new stream.PassThrough();
+                res.setHeader("Content-Disposition", "attachment; filename=agent_parcels.pdf");
+                res.setHeader("Content-Type", "application/pdf");
+                doc.pipe(bufferStream);
+                bufferStream.pipe(res);
+        
+                //? Header
+                doc.fontSize(18).text(`Parcels Assigned to: ${agentEmail}`, { align: "center" });
+                doc.moveDown(2);
+        
+                //? === Table Header ===
+                const tableTop = 100;
+                const rowHeight = 25;
+        
+                const headers = [
+                    "Customer",
+                    "Contact",
+                    "Pickup",
+                    "Delivery",
+                    "Type",
+                    "Size",
+                    "Payment",
+                    "Price",
+                    "Status",
+                    "Agent"
+                ];
+        
+                const columnWidths = [80, 70, 70, 70, 50, 40, 60, 40, 60];
+                let startX = 40;
+        
+                headers.forEach((header, i) => {
+                    doc
+                        .font("Helvetica-Bold")
+                        .fontSize(10)
+                        .rect(startX, tableTop, columnWidths[i], rowHeight)
+                        .stroke()
+                        .text(header, startX + 5, tableTop + 7, { width: columnWidths[i] - 10 });
+                    startX += columnWidths[i];
+                });
+        
+                //? === Table Rows ===
+                let rowY = tableTop + rowHeight;
+        
+                parcels.forEach((p) => {
+                    let x = 40;
+                    const row = [
+                        p.customerEmail,
+                        p.contact || "-",
+                        p.pickupAddress || "-",
+                        p.deliveryAddress,
+                        p.parcelType,
+                        p.size || "-",
+                        p.paymentType,
+                        p.price?.toString() || "0",
+                        p.status
+                    ];
+        
+                    row.forEach((cell, i) => {
+                        doc
+                            .font("Helvetica")
+                            .fontSize(8)
+                            .rect(x, rowY, columnWidths[i], rowHeight)
+                            .stroke()
+                            .text(cell, x + 3, rowY + 7, { width: columnWidths[i] - 6, ellipsis: true });
+                        x += columnWidths[i];
+                    });
+        
+                    rowY += rowHeight;
+        
+                    if (rowY > 750) {
+                        doc.addPage();
+                        rowY = 50;
+                    }
+                });
+        
+                doc.end();
+            } catch (err) {
+                console.error("PDF export error:", err);
+                res.status(500).send({ message: "Failed to export PDF" });
+            }
+        });
 
 
         // await client.db("admin").command({ ping: 1 });
