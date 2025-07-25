@@ -191,6 +191,7 @@ async function run() {
         app.post("/registration", async (req, res) => {
             try {
                 const newUser = req?.body;
+                newUser.role = "Customer";
 
                 //? check if the user exit
                 const existingUser = await usersCollection.findOne({ email: newUser?.email });
@@ -491,6 +492,42 @@ async function run() {
             } catch (err) {
                 console.error("Error updating location:", err);
                 res.status(500).send({ message: "Server error" });
+            }
+        });        
+
+        //* ===================================
+        //* Parcel Metrics API (for Admin Dashboard)
+        //* ===================================
+
+        app.get("/admin/dashboard-metrics", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+                const totalParcels = await parcelsCollection.countDocuments();
+        
+                const dailyBookings = await parcelsCollection.countDocuments({
+                    createdAt: { $gte: todayStart }
+                });
+        
+                const failedDeliveries = await parcelsCollection.countDocuments({
+                    status: "Failed"
+                });
+        
+                const codParcels = await parcelsCollection.find({ paymentType: "COD" }).toArray();
+                const codNumber = codParcels.length; //? number of COD parcels
+                const codAmount = codParcels.reduce((total, parcel) => total + (parcel.price || 0), 0); //? sum of COD prices
+        
+                res.send({
+                    totalParcels,
+                    dailyBookings,
+                    failedDeliveries,
+                    codAmount,
+                    codNumber
+                });
+            } catch (err) {
+                console.error("Dashboard metrics error:", err);
+                res.status(500).send({ message: "Error getting metrics" });
             }
         });        
 

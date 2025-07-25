@@ -4,6 +4,7 @@
   customerEmail,
   pickupAddress,
   deliveryAddress,
+  price,
   parcelType, // e.g. "Document", "Box", "Fragile"
   size,       // e.g. "Small", "Medium", "Large"
   paymentType, // COD / Prepaid
