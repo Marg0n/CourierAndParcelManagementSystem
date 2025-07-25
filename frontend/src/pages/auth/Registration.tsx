@@ -77,7 +77,7 @@ export function Registration() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Tony" {...field} />
+                    <Input placeholder="Natsu Dragneel" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -94,7 +94,7 @@ export function Registration() {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="tony@mail.com"
+                      placeholder="natsu@mail.com"
                       {...field}
                     />
                   </FormControl>
