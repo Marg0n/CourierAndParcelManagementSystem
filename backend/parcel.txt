@@ -4,7 +4,9 @@
   customerEmail,
   pickupAddress,
   deliveryAddress,
+  deliveryDate,
   price,
+  contact,
   parcelType, // e.g. "Document", "Box", "Fragile"
   size,       // e.g. "Small", "Medium", "Large"
   paymentType, // COD / Prepaid
@@ -12,5 +14,7 @@
   agentEmail: null | string,
   currentLocation: { lat, lng },
   trackingHistory: [{ lat, lng, timestamp }],
+  deliveryInstructions,
+  Barcode,
   createdAt
 }
