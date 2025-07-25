@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { MongoClient, ServerApiVersion } from "mongodb";
 import bcrypt from "bcryptjs";
+import { Parser } from "json2csv";
 
 
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -254,7 +255,7 @@ async function run() {
                 const isPasswordValid = await bcrypt.compare(password + pepper, user?.password);
 
                 if (!isPasswordValid) {
-                return res.status(401).json({ message: "Invalid email or password!" });
+                    return res.status(401).json({ message: "Invalid email or password!" });
                 }
 
                 //? Prepare payload
@@ -293,7 +294,7 @@ async function run() {
             const { id } = req.params;
             const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
             res.send(parcel);
-        });        
+        });
 
         //* ==================================
         //* Get All Parcels (Admin) 
@@ -303,7 +304,7 @@ async function run() {
             const result = await parcelsCollection.find().toArray();
             res.send(result);
         });
-        
+
         //* ==================================
         //* Delivery Agent – Get Assigned Parcels 
         //* ==================================
@@ -313,7 +314,7 @@ async function run() {
             const result = await parcelsCollection.find({ agentEmail: email }).toArray();
             res.send(result);
         });
-        
+
         //* ==================================
         //* Get User Details
         //* ==================================
@@ -321,18 +322,18 @@ async function run() {
         app.get("/get-user", verifyToken, async (req, res) => {
             try {
                 const email = req.decoded.email;
-        
+
                 const user = await usersCollection.findOne({ email }, { projection: { password: 0 } }); //! excluding password for privacy
                 if (!user) {
                     return res.status(404).json({ message: "User not found" });
                 }
-        
+
                 res.send(user);
             } catch (err) {
                 console.error("Error fetching user:", err);
                 res.status(500).json({ message: "Internal server error" });
             }
-        });        
+        });
 
         //* ===================================
         //* Create Parcel API (Customer only)
@@ -411,9 +412,9 @@ async function run() {
             try {
                 const { id } = req.params;
                 const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
-        
+
                 if (!parcel) return res.status(404).send({ message: "Parcel not found" });
-        
+
                 res.send(parcel);
             } catch (err) {
                 console.error("Error fetching parcel:", err);
@@ -433,7 +434,7 @@ async function run() {
                 console.error("Error fetching parcels:", err);
                 res.status(500).send({ message: "Server error" });
             }
-        });        
+        });
 
         //* ===================================
         //* Admin: Get All Users
@@ -447,7 +448,7 @@ async function run() {
                 console.error("Error fetching users:", err);
                 res.status(500).send({ message: "Server error" });
             }
-        });        
+        });
 
         //* ===================================
         //* Agent: Get Assigned Parcels
@@ -462,8 +463,8 @@ async function run() {
                 console.error("Error fetching assigned parcels:", err);
                 res.status(500).send({ message: "Server error" });
             }
-        });        
-        
+        });
+
         //* ===================================
         //* Agent: Update Current Location (for real-time tracking)
         //* ===================================
@@ -472,14 +473,14 @@ async function run() {
             try {
                 const { id } = req.params;
                 const { lat, lng } = req.body;
-        
+
                 const timestamp = new Date();
                 const locationUpdate = {
                     lat,
                     lng,
                     timestamp
                 };
-        
+
                 const result = await parcelsCollection.updateOne(
                     { _id: new ObjectId(id), agentEmail: req.decoded.email },
                     {
@@ -487,13 +488,13 @@ async function run() {
                         $push: { trackingHistory: locationUpdate }
                     }
                 );
-        
+
                 res.send(result);
             } catch (err) {
                 console.error("Error updating location:", err);
                 res.status(500).send({ message: "Server error" });
             }
-        });        
+        });
 
         //* ===================================
         //* Parcel Metrics API (for Admin Dashboard)
@@ -503,21 +504,21 @@ async function run() {
             try {
                 const now = new Date();
                 const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+
                 const totalParcels = await parcelsCollection.countDocuments();
-        
+
                 const dailyBookings = await parcelsCollection.countDocuments({
                     createdAt: { $gte: todayStart }
                 });
-        
+
                 const failedDeliveries = await parcelsCollection.countDocuments({
                     status: "Failed"
                 });
-        
+
                 const codParcels = await parcelsCollection.find({ paymentType: "COD" }).toArray();
                 const codNumber = codParcels.length; //? number of COD parcels
                 const codAmount = codParcels.reduce((total, parcel) => total + (parcel.price || 0), 0); //? sum of COD prices
-        
+
                 res.send({
                     totalParcels,
                     dailyBookings,
@@ -529,10 +530,51 @@ async function run() {
                 console.error("Dashboard metrics error:", err);
                 res.status(500).send({ message: "Error getting metrics" });
             }
-        });        
+        });
 
         //* ===================================
-        //* Agent Updates Parcel Status
+        //* Export Bookings as CSV
+        //* ===================================
+
+        app.get("/admin/export-csv", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const parcels = await parcelsCollection.find().toArray();
+
+                if (!parcels.length) {
+                    return res.status(404).send({ message: "No parcels found to export" });
+                }
+
+                const fields = [
+                    "customerEmail",
+                    "contact",
+                    "pickupAddress",
+                    "deliveryAddress",
+                    "deliveryDate",
+                    "parcelType",
+                    "size",
+                    "paymentType",
+                    "price",
+                    "status",
+                    "agentEmail",
+                    "deliveryInstructions",
+                    "barcode",
+                    "createdAt"
+                ];
+
+                const parser = new Parser({ fields });
+                const csv = parser.parse(parcels);
+
+                res.header("Content-Type", "text/csv");
+                res.attachment("parcel_bookings.csv");
+                res.send(csv);
+            } catch (err) {
+                console.error("CSV export error:", err);
+                res.status(500).send({ message: "CSV export failed" });
+            }
+        });
+
+        //* ===================================
+        //* Export Bookings as CSV
         //* ===================================
 
 
