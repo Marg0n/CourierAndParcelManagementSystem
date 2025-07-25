@@ -15,18 +15,25 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters." }),
+    .min(4, { message: "Password must be at least 4 characters." }),
 });
 
 export function Registration() {
+
+  //* States
   const [showPassword, setShowPassword] = useState(false);
+
+  //* Navigation
+  const navigate = useNavigate();
+  const location = useLocation();
+  const whereTo = location?.state || '/login';
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -53,10 +60,13 @@ export function Registration() {
       const result = await response.json();
 
       toast.success("Registration successful", {
-        description: `Welcome, ${result.name || data.name}!`,
+        description: `Welcome, ${result.name || data.name}! Just Login & you are good to go!`,
       });
 
       form.reset();
+
+      navigate(whereTo, { replace: true });
+
     } catch (error: any) {
       toast.error("Registration failed", {
         description: error.message,
