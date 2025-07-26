@@ -18,6 +18,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+// import jwt_decode from "jwt-decode"
+
 
 //* Validation schema
 const FormSchema = z.object({
@@ -69,7 +71,11 @@ export function Login() {
         description: result.message,
       });
 
-      //* redirect to dashboard or protected page
+      //* redirect to dashboard or protected page based on role
+      // if (role === "Admin") navigate("/dashboard/admin")
+      //   else if (role === "Customer") navigate("/dashboard/customer")
+      //   else if (role === "Delivery Agent") navigate("/dashboard/agent")
+        // else navigate("/") // fallback
       // navigate(whereTo, { replace: true });
     } catch (error: any) {
       toast.error("Login failed", {

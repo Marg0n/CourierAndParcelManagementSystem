@@ -208,11 +208,11 @@ async function run() {
                 }
 
                 //? Get password and PEPPER
-                const plainPassword = newUser?.password;
-                const pepper = process.env.BCRYPT_PEPPER || "";
+                const plainPassword = newUser?.password.trim();
+                const pepper = process.env.BCRYPT_PEPPER;
 
                 //? Parse salt rounds from env, with fallback
-                const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS);
+                const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 8;
 
                 //? Generate salt and hash password
                 const hashedPassword = await bcrypt.hash(plainPassword + pepper, saltRounds);
@@ -257,8 +257,8 @@ async function run() {
                 }
 
                 //? validate password
-                const pepper = process.env.BCRYPT_PEPPER || "";
-                const isPasswordValid = await bcrypt.compare(password + pepper, user?.password);
+                const pepper = process.env.BCRYPT_PEPPER;
+                const isPasswordValid = await bcrypt.compare(password.trim() + pepper, user?.password);
 
                 if (!isPasswordValid) {
                     return res.status(401).json({ message: "Invalid email or password!" });
@@ -273,7 +273,7 @@ async function run() {
 
                 //? Generate tokens
                 const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-                    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1d"
+                    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "30d"
                 });
 
                 const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
