@@ -178,13 +178,19 @@ Local installation guide:
 
 ## Backend
 
-- Just run this command. It will install *cors*, *mongodb*, *dotenv*, *nodemon*, *jsonwebtoken*, *express*, *cookie-parser*, *bcryptjs* in the project
+- Just run this command. It will install *cors*, *mongodb*, *dotenv*, *nodemon*, *jsonwebtoken*, *express*, *cookie-parser*, *bcryptjs*, *json2csv* in the project
 
   ```bash
   npm i
   ```
 
+## Frontend
 
+- Run the following command
+
+  ```bash
+  npm i
+  ```
 
 <!-- 
 ##📄 Final PDF Report
