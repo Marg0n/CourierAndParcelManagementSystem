@@ -26,14 +26,13 @@ const FormSchema = z.object({
 });
 
 export function Registration() {
-
   //* States
   const [showPassword, setShowPassword] = useState(false);
 
   //* Navigation
   const navigate = useNavigate();
   const location = useLocation();
-  const whereTo = location?.state || '/login';
+  const whereTo = location?.state || "/login";
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -60,13 +59,14 @@ export function Registration() {
       const result = await response.json();
 
       toast.success("Registration successful", {
-        description: `Welcome, ${result.name || data.name}! Just Login & you are good to go!`,
+        description: `Welcome, ${
+          result.name || data.name
+        }! Just Login & you are good to go!`,
       });
 
       form.reset();
 
       navigate(whereTo, { replace: true });
-
     } catch (error: any) {
       toast.error("Registration failed", {
         description: error.message,
@@ -74,9 +74,23 @@ export function Registration() {
     }
   }
 
+  //* Back to Home
+  const goHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md p-8 border-2 rounded-2xl shadow-md">
+        {/* Company Title */}
+        <h1 
+          className="text-2xl font-bold text-sky-800 mb-8 text-center hover:cursor-pointer"
+          onClick={goHome}
+        >
+          CourierTrack
+        </h1>
+
+        {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Name */}

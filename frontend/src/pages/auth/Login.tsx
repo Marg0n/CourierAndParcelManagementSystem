@@ -20,7 +20,6 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 // import jwt_decode from "jwt-decode"
 
-
 //* Validation schema
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -36,7 +35,7 @@ export function Login() {
   //* Navigation
   const navigate = useNavigate();
   const location = useLocation();
-  const whereTo = location?.state || '/dashboard';
+  const whereTo = location?.state || "/dashboard";
 
   //* Default values
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -75,7 +74,7 @@ export function Login() {
       // if (role === "Admin") navigate("/dashboard/admin")
       //   else if (role === "Customer") navigate("/dashboard/customer")
       //   else if (role === "Delivery Agent") navigate("/dashboard/agent")
-        // else navigate("/") // fallback
+      // else navigate("/") // fallback
       // navigate(whereTo, { replace: true });
     } catch (error: any) {
       toast.error("Login failed", {
@@ -91,9 +90,23 @@ export function Login() {
     await form.handleSubmit(onSubmit)(); //? Auto-login
   };
 
+  //* Back to Home
+  const goHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md p-8 border-2 rounded-2xl shadow-md">
+        {/* Company Title */}
+        <h1 
+          className="text-2xl font-bold text-sky-800 mb-8 text-center hover:cursor-pointer"
+          onClick={goHome}
+        >
+          CourierTrack
+        </h1>
+
+        {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             {/* Email */}
@@ -149,7 +162,9 @@ export function Login() {
 
             {/* Quick login buttons */}
             <div className="flex flex-col gap-2">
-              <h3 className="text-center font-semibold text-base font-serif">Quick Login Options</h3>
+              <h3 className="text-center font-semibold text-base font-serif">
+                Quick Login Options
+              </h3>
               <Button
                 type="button"
                 variant="outline"
