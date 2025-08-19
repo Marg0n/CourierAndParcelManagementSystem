@@ -257,8 +257,8 @@ async function run() {
                 }
 
                 //? validate password
-                const pepper = process.env.BCRYPT_PEPPER;
-                const isPasswordValid = await bcrypt.compare(password.trim() + pepper, user?.password);
+                // const pepper = process.env.BCRYPT_PEPPER;
+                const isPasswordValid = await bcrypt.compare(password.trim(), user?.password);
 
                 if (!isPasswordValid) {
                     return res.status(401).json({ message: "Invalid email or password!" });
