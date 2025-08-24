@@ -18,7 +18,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import jwt_decode from "jwt-decode"
+import { jwtDecode, type JwtPayload } from "jwt-decode";
+
+//* Extending JwtPayload
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+  role: "Admin" | "Customer" | "Delivery Agent";
+  email: string;
+}
 
 //* Validation schema
 const FormSchema = z.object({
@@ -35,7 +42,7 @@ export function Login() {
   //* Navigation
   const navigate = useNavigate();
   const location = useLocation();
-  const whereTo = location?.state || "/dashboard";
+  const whereTo = location?.state || "/login";
 
   //* Default values
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -56,7 +63,7 @@ export function Login() {
       });
 
       const result = await response.json();
-      console.log(response);
+      // console.log(response);
 
       if (!response.ok) {
         throw new Error(result.message || "Login failed");
@@ -66,20 +73,27 @@ export function Login() {
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
 
+      //* Decoding accessToken
+      const token = result.accessToken;
+      const decode = jwtDecode<CustomJwtPayload>(token);
+      const Role = decode.role;
+      
+
       toast.success("Login successful", {
         description: result.message,
       });
 
       //* redirect to dashboard or protected page based on role
-      // if (role === "Admin") navigate("/dashboard/admin")
-      //   else if (role === "Customer") navigate("/dashboard/customer")
-      //   else if (role === "Delivery Agent") navigate("/dashboard/agent")
-      // else navigate("/") // fallback
-      // navigate(whereTo, { replace: true });
+      if (Role === "Admin") navigate("/dashboard/admin");
+      else if (Role === "Customer") navigate("/dashboard/customer");
+      else if (Role === "Delivery Agent") navigate("/dashboard/agent");
+      else navigate(whereTo, { replace: true }); // fallback
     } catch (error: any) {
       toast.error("Login failed", {
         description: error.message,
       });
+      console.log(whereTo)
+      navigate(whereTo, { replace: true });
     }
   }
 
@@ -99,7 +113,7 @@ export function Login() {
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-md p-8 border-2 rounded-2xl shadow-md">
         {/* Company Title */}
-        <h1 
+        <h1
           className="text-2xl font-bold text-sky-800 mb-8 text-center hover:cursor-pointer"
           onClick={goHome}
         >
