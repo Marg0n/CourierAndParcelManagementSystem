@@ -1,9 +1,16 @@
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 const ErrorPage = () => {
+
+  //* Navigation
   const navigate = useNavigate();
+  const location = useLocation();
+  const whereTo = location?.state;
+  const fromWhere = location?.pathname;
+
+  console.log(fromWhere,whereTo)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-sky-200 flex flex-col justify-center items-center text-center px-4">

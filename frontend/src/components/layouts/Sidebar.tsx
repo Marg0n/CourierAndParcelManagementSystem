@@ -5,24 +5,35 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ role }: SidebarProps) => {
+
+  //* Map role to lowercase string for URL
+  const roleToPath = {
+    Admin: "admin",
+    Customer: "customer",
+    "Delivery Agent": "agent",
+  } as const;
+
+  const rolePath = roleToPath[role];
+
   const commonLinks = [
     { to: "/", label: "Home" },
-    { to: "/dashboard", label: "Dashboard" },
+    { to: `/dashboard/${rolePath}`, label: "Dashboard" },
+    { to: "/login", label: "Logout" },
   ]
 
   const roleLinks = {
     Admin: [
-      { to: "/dashboard/admin/users", label: "Users" },
-      { to: "/dashboard/admin/parcels", label: "Parcels" },
-      { to: "/dashboard/admin/metrics", label: "Analytics" },
+      { to: `/dashboard/${rolePath}/users`, label: "Users" },
+      { to: `/dashboard/${rolePath}/parcels`, label: "Parcels" },
+      { to: `/dashboard/${rolePath}/metrics`, label: "Analytics" },
     ],
     Customer: [
-      { to: "/dashboard/customer/book", label: "Book Parcel" },
-      { to: "/dashboard/customer/history", label: "My Bookings" },
+      { to: `/dashboard/${rolePath}/book`, label: "Book Parcel" },
+      { to: `/dashboard/${rolePath}/history`, label: "My Bookings" },
     ],
     "Delivery Agent": [
-      { to: "/dashboard/agent/assigned", label: "Assigned Parcels" },
-      { to: "/dashboard/agent/export", label: "Export Data" },
+      { to: `/dashboard/${rolePath}/assigned`, label: "Assigned Parcels" },
+      { to: `/dashboard/${rolePath}/export`, label: "Export Data" },
     ],
   }
 
