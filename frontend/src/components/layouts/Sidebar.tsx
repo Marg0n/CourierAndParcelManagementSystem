@@ -1,10 +1,14 @@
-import { Link } from "react-router-dom"
+import { logout } from "@/utils/logout";
+import { Link, useNavigate } from "react-router-dom"
 
 interface SidebarProps {
   role: "Admin" | "Customer" | "Delivery Agent"
 }
 
 export const Sidebar = ({ role }: SidebarProps) => {
+
+  //* Navigation
+  const navigate = useNavigate();
 
   //* Map role to lowercase string for URL
   const roleToPath = {
@@ -18,7 +22,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
   const commonLinks = [
     { to: "/", label: "Home" },
     { to: `/dashboard/${rolePath}`, label: "Dashboard" },
-    { to: "/login", label: "Logout" },
+    // { to: "/login", label: "Logout" },
   ]
 
   const roleLinks = {
@@ -50,6 +54,13 @@ export const Sidebar = ({ role }: SidebarProps) => {
           </Link>
         ))}
       </nav>
+
+      <button
+        onClick={() => logout(navigate)}
+        className="mt-8 text-red-600 hover:text-red-800 font-medium text-left"
+      >
+        Logout
+      </button>
     </aside>
   )
 }
