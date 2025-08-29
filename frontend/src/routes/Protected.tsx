@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import LoadingPage from "@/pages/shared/loading/LoadingPage";
 import { logout } from "@/utils/logout";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState, type ReactNode } from "react";
@@ -109,7 +110,7 @@ const Protected: React.FC<ProtectedProps> = ({children}) => {
   }, [navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingPage/>;
   }
 
   if (!isAuthenticated) {
