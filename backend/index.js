@@ -293,8 +293,63 @@ async function run() {
         })
 
         //* ==================================
-        // TODO: Refresh Token to Access Token
+        //* Refresh Token to Access Token
         //* ==================================
+
+        app.post("/refresh", (req, res)=> {
+
+            try{
+
+                const { refreshToken } = req.body;
+    
+                if(!refreshToken) return res.status(401).json({ message: "Unauthorized: Refresh token is missing!"});
+    
+                //* Prevents 
+                if(!refreshToken.includes(refreshToken)) {
+                    return res.status(403).json({ message: "Forbidden: Refresh token is invalid or expired." });
+                }
+    
+                jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (error, decode) => {
+    
+                    if (error) return res.status(403).json({ message: "Invalid RT." });
+    
+                    const { id, email, role } = decode;
+
+                    // Optional: check if the user still exists
+                    // const user = await usersCollection.findOne({ email: decoded.email });
+                    // if (!user) {
+                    //     return res.status(404).json({ message: "User no longer exists." });
+                    // }
+
+                    //* Prepare payload again
+                    const payload = {
+                        id,
+                        email,
+                        role
+                    };
+    
+                    //* Generate new access token
+                    const newAccessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+                        expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "30d"
+                    })
+
+                    // Optionally: generate a new refresh token (rotation)
+                    // const newRefreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+                    //     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "365d"
+                    // });
+
+                    res.status(200).json({
+                        message: "Access token refreshed successfully.",
+                        accessToken: newAccessToken,
+                        // refreshToken: newRefreshToken  //? Uncomment if rotating
+                    });
+                })
+            }
+            catch(err){
+                console.error("Refresh token error:", err);
+                res.status(500).json({ message: "Internal server error", error: err?.message });
+            }
+        });
 
         //* ==================================
         //* Get Parcel Details by ID 
