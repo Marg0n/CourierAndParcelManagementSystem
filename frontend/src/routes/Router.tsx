@@ -9,6 +9,8 @@ import ErrorPage from "@/pages/shared/errors/ErrorPage";
 import Protected from "./Protected";
 import AllUsers from "@/components/dashboard/admin/AllUsers";
 import AdminHome from "@/components/dashboard/admin/AdminHome";
+import AllParcels from "@/components/dashboard/admin/AllParcels";
+import Analytics from "@/components/dashboard/admin/Analytics";
 
 
 const Router = createBrowserRouter([
@@ -40,11 +42,11 @@ const Router = createBrowserRouter([
       },
       {
         path: "parcels",
-        element:<AdminDashboard />,
+        element:<AllParcels />,
       },
       {
         path: "metrics",
-        element:<AdminDashboard />,
+        element:<Analytics />,
       },
     ]
   },
