@@ -29,9 +29,18 @@ export const Sidebar = ({ role }: SidebarProps) => {
     "Delivery Agent": "agent",
   } as const;
 
+  //* Link types
+  interface LinkItem {
+    to: string;
+    label: string;
+    icon: React.ReactNode;
+    exact?: boolean;
+  }
+  
+
   const rolePath = roleToPath[role];
 
-  const commonLinks = [
+  const commonLinks: LinkItem[] = [
     { to: "/", label: "Home", icon: <Home size={18} /> },
     { 
       to: `/dashboard/${rolePath}`, 
@@ -42,7 +51,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
     // { to: "/login", label: "Logout" },
   ]
 
-  const roleLinks = {
+  const roleLinks: Record<typeof role, LinkItem[]> = {
     Admin: [
       { to: `/dashboard/${rolePath}/users`, label: "Users", icon: <Users size={18} /> },
       { to: `/dashboard/${rolePath}/parcels`, label: "Parcels", icon: <PackageSearch size={18}/> },
