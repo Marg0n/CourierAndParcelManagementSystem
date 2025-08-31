@@ -7,6 +7,8 @@ import AdminDashboard from "@/pages/dashboard/admin/AdminDashboard";
 import CustomerDashboard from "@/pages/dashboard/customer/CustomerDashboard";
 import ErrorPage from "@/pages/shared/errors/ErrorPage";
 import Protected from "./Protected";
+import AllUsers from "@/components/dashboard/admin/AllUsers";
+import AdminHome from "@/components/dashboard/admin/AdminHome";
 
 
 const Router = createBrowserRouter([
@@ -27,6 +29,24 @@ const Router = createBrowserRouter([
   {
     path: "/dashboard/admin",
     element: <Protected><AdminDashboard /></Protected>,
+    children:[
+      {
+        index: true,
+        element:<AdminHome/>,
+      },
+      {
+        path: "users",
+        element:<AllUsers />,
+      },
+      {
+        path: "parcels",
+        element:<AdminDashboard />,
+      },
+      {
+        path: "metrics",
+        element:<AdminDashboard />,
+      },
+    ]
   },
   {
     path: "/dashboard/customer",
@@ -37,7 +57,7 @@ const Router = createBrowserRouter([
     element: <Protected><AgentDashboard /></Protected>,
   },
 
-  // Fallback route for undefined paths
+  //* Fallback route for undefined paths
   {
     path: "*",
     element: <ErrorPage />,

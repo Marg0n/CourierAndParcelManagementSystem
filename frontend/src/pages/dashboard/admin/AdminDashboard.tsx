@@ -1,11 +1,12 @@
-import AdminHome from "@/components/dashboard/admin/AdminHome";
+
+import AdminLayout from "@/components/dashboard/admin/AdminLayout";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 
 const AdminDashboard = () => {
   return (
     <DashboardLayout role="Admin">
-      <AdminHome/>
+      <AdminLayout/>
     </DashboardLayout>
   );
 };
