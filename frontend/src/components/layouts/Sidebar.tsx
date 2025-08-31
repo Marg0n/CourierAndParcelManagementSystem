@@ -1,5 +1,5 @@
 import { logout } from "@/utils/logout";
-import { Link, useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 
 interface SidebarProps {
   role: "Admin" | "Customer" | "Delivery Agent"
@@ -45,13 +45,18 @@ export const Sidebar = ({ role }: SidebarProps) => {
     <aside className="w-64 bg-white shadow-md h-screen p-6">
       <nav className="flex flex-col gap-4">
         {[...commonLinks, ...roleLinks[role]].map((link) => (
-          <Link
+          <NavLink
             key={link.to}
             to={link.to}
-            className="text-gray-700 hover:text-sky-600 font-medium"
+            end={link.to === `/dashboard/${rolePath}`} //? Only apply 'end' on the Dashboard link
+            className={({ isActive }) =>
+              isActive
+                ? "bg-sky-100 text-sky-700 rounded px-2 py-1 font-semibold"  //? Active style
+                : "text-gray-700 hover:text-sky-600 font-medium"  //? Inactive style
+            }
           >
             {link.label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
 
