@@ -73,7 +73,7 @@ export function Login() {
         throw new Error(result.message || "Login failed");
       }
 
-      //* Store in Zustand (syncs user + tokens)
+      //* Store in Zustand (syncs user + tokens) + Persist in localStorage Store tokens securely by zustand
       login({
         user: result?.user,
         accessToken: result?.accessToken,
@@ -81,8 +81,8 @@ export function Login() {
       });
 
       //* Persist in localStorage Store tokens securely
-      localStorage.setItem("accessToken", result.accessToken);
-      localStorage.setItem("refreshToken", result.refreshToken);
+      // localStorage.setItem("accessToken", result.accessToken);
+      // localStorage.setItem("refreshToken", result.refreshToken);
 
       //* Decoding accessToken
       // const token = result.accessToken;
@@ -109,7 +109,7 @@ export function Login() {
       console.log(whereTo)
       navigate(whereTo, { replace: true });
     }
-    
+
   }
 
   //* Quick login
