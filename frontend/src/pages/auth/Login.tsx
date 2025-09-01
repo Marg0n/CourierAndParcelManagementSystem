@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode, type JwtPayload } from "jwt-decode";
+import { useAuthStore } from "@/store/useAuthStore";
 
 //* Extending JwtPayload
 interface CustomJwtPayload extends JwtPayload {
@@ -38,6 +39,9 @@ const FormSchema = z.object({
 export function Login() {
   //* states
   const [showPassword, setShowPassword] = useState(false);
+
+  //* Zustand actions
+  const login = useAuthStore((state) => state.login)
 
   //* Navigation
   const navigate = useNavigate();
@@ -69,14 +73,21 @@ export function Login() {
         throw new Error(result.message || "Login failed");
       }
 
-      //* Store tokens securely
+      //* Store in Zustand (syncs user + tokens)
+      login({
+        user: result?.user,
+        accessToken: result?.accessToken,
+        refreshToken: result?.refreshToken,
+      });
+
+      //* Persist in localStorage Store tokens securely
       localStorage.setItem("accessToken", result.accessToken);
       localStorage.setItem("refreshToken", result.refreshToken);
 
       //* Decoding accessToken
-      const token = result.accessToken;
-      const decode = jwtDecode<CustomJwtPayload>(token);
-      const Role = decode.role;
+      // const token = result.accessToken;
+      // const decode = jwtDecode<CustomJwtPayload>(token);
+      // const Role = decode.role;
       
 
       toast.success("Login successful", {
@@ -84,17 +95,21 @@ export function Login() {
       });
 
       //* redirect to dashboard or protected page based on role
-      if (Role === "Admin") navigate("/dashboard/admin");
-      else if (Role === "Customer") navigate("/dashboard/customer");
-      else if (Role === "Delivery Agent") navigate("/dashboard/agent");
+      if (result.user.role === "Admin") navigate("/dashboard/admin");
+      else if (result.user.role === "Customer") navigate("/dashboard/customer");
+      else if (result.user.role === "Delivery Agent") navigate("/dashboard/agent");
       else navigate(whereTo, { replace: true }); // fallback
-    } catch (error: any) {
+
+    } 
+    catch (error: any) {
+
       toast.error("Login failed", {
         description: error.message,
       });
       console.log(whereTo)
       navigate(whereTo, { replace: true });
     }
+    
   }
 
   //* Quick login
