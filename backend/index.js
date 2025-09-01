@@ -40,6 +40,9 @@ app.use(
         optionsSuccessStatus: 200,
     })
 )
+//? for reverse proxies like Nginx or Vercel. This allows Express to respect the X-Forwarded-For header, which proxies set to include the original client's IP.
+app.set('trust proxy', true);
+
 
 //* ===================================
 //* jwt validation middleware
@@ -244,19 +247,19 @@ async function run() {
             try {
                 const { email, password } = req?.body;
 
-                //? check
+                //? Check if email and password are provided
                 if (!email || !password) {
                     return res.status(400).json({ message: "Email and password are required." });
                 }
 
-                //? find user
+                //? Find user by email
                 const user = await usersCollection.findOne({ email });
 
                 if (!user) {
                     return res.status(401).json({ message: "Invalid email or password." });
                 }
 
-                //? validate password
+                //? Validate password using bcrypt
                 // const pepper = process.env.BCRYPT_PEPPER;
                 const isPasswordValid = await bcrypt.compare(password.trim(), user?.password);
 
@@ -271,7 +274,7 @@ async function run() {
                     role: user.role
                 };
 
-                //? Generate tokens
+                //? Generate access and refresh tokens
                 const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
                     expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "30d"
                 });
@@ -280,6 +283,24 @@ async function run() {
                     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "365d"
                 });
 
+                //? Get user's IP address (works behind proxies too if trust proxy is set)
+                const ip =
+                    req.headers['x-forwarded-for']?.toString().split(',')[0] ||  //? Behind proxy
+                    req.socket?.remoteAddress ||                                 //? Fallback
+                    req.ip;
+
+                //? Update user's last login timestamp and IP address
+                await usersCollection.updateOne(
+                    { _id: user._id },
+                    {
+                        $set: {
+                            lastLogin: new Date(),   //? Time of login
+                            lastLoginIP: ip          //? IP address of user
+                        }
+                    }
+                );
+
+                //? Respond with success and tokens
                 res.status(200).json({
                     message: "Login successful",
                     accessToken,
