@@ -1,5 +1,5 @@
-import { logout } from "@/utils/logout";
-import { NavLink, useNavigate } from "react-router-dom"
+
+import { NavLink } from "react-router-dom"
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +12,7 @@ import {
   Truck,
   Download,
 } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface SidebarProps {
   role: "Admin" | "Customer" | "Delivery Agent"
@@ -20,7 +21,10 @@ interface SidebarProps {
 export const Sidebar = ({ role }: SidebarProps) => {
 
   //* Navigation
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+
+  //* Zustand
+  const logout = useAuthStore((store) => store.logout);
 
   //* Map role to lowercase string for URL
   const roleToPath = {
@@ -90,7 +94,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
       </nav>
 
       <button
-        onClick={() => logout(navigate)}
+        onClick={() => logout()}
         className="flex items-center gap-2 mt-8 text-red-600 hover:text-red-800 font-medium"
       >
         <LogOut size={18} />
