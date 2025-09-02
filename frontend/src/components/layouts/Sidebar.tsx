@@ -95,7 +95,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
 
       <button
         onClick={() => logout()}
-        className="flex items-center gap-2 mt-8 text-red-600 hover:text-red-800 font-medium"
+        className="flex items-center gap-2 mt-8 text-red-600 hover:text-red-800 font-medium cursor-pointer"
       >
         <LogOut size={18} />
         Logout
