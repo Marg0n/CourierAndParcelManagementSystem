@@ -1,10 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import ErrorBoundary from "../shared/errors/ErrorBoundary";
+import { useAuthStore } from "@/store/useAuthStore";
 
 
 const LandingPage = () => {
+
+  //* Navigation
   const navigate = useNavigate();
+
+  //* Zustand
+  const { user, accessToken } = useAuthStore();
+
 
   return (
     <ErrorBoundary>
@@ -12,7 +19,11 @@ const LandingPage = () => {
         {/* Header */}
         <header className="px-6 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold text-sky-800">CourierTrack</h1>
-          <Button onClick={() => navigate("/login")}>Login</Button>
+          {
+            accessToken 
+            ? `Hello ${user?.name}`
+            : <Button onClick={() => navigate("/login")}>Login</Button>
+          }
         </header>
 
         {/* Hero Section */}

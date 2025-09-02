@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface User {
   id: string;
+  name: string;
   email: string;
   role: string;
   lastLogin?: string;
@@ -22,7 +23,7 @@ interface AuthState {
   logout: () => void;
 }
 
-//* Withoput using persist
+//* Without using persist
 // export const useAuthStore = create<AuthState>(
 //     (set) => ({
 //         user: null,
