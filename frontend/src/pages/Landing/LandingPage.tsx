@@ -12,7 +12,7 @@ const LandingPage = () => {
   const whereTo = location?.state || "/";
 
   //* Zustand
-  const { user, accessToken, logout } = useAuthStore();
+  const { user, accessToken, logout } = useAuthStore(); 
 
   //* Map role to lowercase string for URL
   const roleToPath = {
@@ -21,11 +21,7 @@ const LandingPage = () => {
     "Delivery Agent": "agent",
   } as const;
 
-  interface RoleProps {
-    role: "Admin" | "Customer" | "Delivery Agent"
-  }
-
-  const rolePath = roleToPath[user?.role] as RoleProps;
+  const rolePath = user?.role && roleToPath[user.role as keyof typeof roleToPath];
 
   return (
     <ErrorBoundary>
