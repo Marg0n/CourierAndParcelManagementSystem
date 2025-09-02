@@ -14,6 +14,19 @@ const LandingPage = () => {
   //* Zustand
   const { user, accessToken, logout } = useAuthStore();
 
+  //* Map role to lowercase string for URL
+  const roleToPath = {
+    Admin: "admin",
+    Customer: "customer",
+    "Delivery Agent": "agent",
+  } as const;
+
+  interface RoleProps {
+    role: "Admin" | "Customer" | "Delivery Agent"
+  }
+
+  const rolePath = roleToPath[user?.role] as RoleProps;
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-b from-white via-sky-100 to-sky-200 flex flex-col">
@@ -59,8 +72,8 @@ const LandingPage = () => {
             Book pickups, assign delivery agents, track in real-time, and manage
             your logistics from one powerful dashboard.
           </p>
-          <Button size="lg" onClick={() => navigate("/login")}>
-            Get Started → Login
+          <Button size="lg" onClick={() => navigate(accessToken ? `/dashboard/${rolePath}` : "/login")}>
+            Get Started → {accessToken ? `${user?.role} Dashboard` : "Login"}
           </Button>
         </main>
 
