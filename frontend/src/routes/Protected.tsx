@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
-import { logout } from "@/utils/logout";
+import { useAuthStore } from "@/store/useAuthStore";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,11 +25,14 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  //* Zustand state + actions from Zustand instead of localStorage
+  const { accessToken, refreshToken, login, logout } = useAuthStore();
+
   //* Refresh access token
   const refreshAccessToken = async (): Promise<boolean> => {
 
     //* Fetch access token
-    const refreshToken = localStorage.getItem("refreshToken");
+    // const refreshToken = localStorage.getItem("refreshToken");
 
     if (!refreshToken) return false;
 
@@ -43,11 +46,20 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
       });
 
       const data = await response.json();
-      if (response.ok) localStorage.setItem("accessToken", data.accessToken);
 
-      return true;
+      // Save new token in Zustand
+      if (response.ok) {
+        login({
+          user: data.user,
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        })
+        return true;
+      };
+
+      return false;
     } catch (err: any) {
-      console.error(err);
+      console.error("Refresh error:",err);
       return false;
     }
   };
@@ -58,7 +70,7 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
     const checkToken = async () => {
 
       //* Fetch token
-      let accessToken = localStorage.getItem("accessToken");
+      // let accessToken = localStorage.getItem("accessToken");
 
       //* check if token is present
       if (!accessToken) {
@@ -66,18 +78,24 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
 
         if (!refreshed) {
           toast.error("Session expired. Please log in again.");
-          logout(navigate);
+          logout();
+          navigate("/login");
           return;
         }
 
         //* Retry getting the access token after refresh
-        accessToken = localStorage.getItem("accessToken");
+        // accessToken = localStorage.getItem("accessToken");
       }
 
       // TODO: Optionally validate token expiration here or to refresh token with refreshToken if expired
       
       //* decode the new access token and check expiration
       try {
+
+        //* Check token
+        const tokenToCheck = accessToken;
+        if (!tokenToCheck) throw new Error("Missing token");
+
         const { exp } = jwtDecode<JwtPayload>(accessToken as string);
         //* expiration in second
         const isExpired = exp * 1000 < Date.now();
@@ -87,25 +105,29 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
 
           if (!refreshed) {
             toast.error("Session expired. Please log in again.");
-            logout(navigate);
+            logout();
+            navigate("/login");
             return;
           }
         }
 
         setIsAuthenticated(true);
-      } catch (err: any) {
-        console.error(err);
+      } 
+      catch (err: any) {
+        console.error("Token check error:", err);
         toast.error("Invalid session. Please login again.", {
-          description: err?.message || err,
+          description: err?.message || String(err),
         });
+        logout();
         navigate("/login");
-      } finally {
+      } 
+      finally {
         setLoading(false);
       }
     };
 
     checkToken();
-  }, [navigate]);
+  }, [accessToken, refreshToken]);
 
   if (loading) {
     return <LoadingPage />;
