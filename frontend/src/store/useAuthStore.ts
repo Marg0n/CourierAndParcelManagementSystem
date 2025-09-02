@@ -43,7 +43,12 @@ export const useAuthStore = create<AuthState>()(
             refreshToken: null,
             login: ({ user, accessToken, refreshToken }) =>
                 set({ user, accessToken, refreshToken }),
-            logout: () => set({ user: null, accessToken: null, refreshToken: null }),
+            logout: () => {
+              set({ user: null, accessToken: null, refreshToken: null });
+
+              // Remove persisted storage key completely
+              localStorage.removeItem("auth-storage");
+            },
         }),
         {
             name: "auth-storage", //? storage key
