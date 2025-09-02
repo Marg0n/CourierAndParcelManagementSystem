@@ -47,7 +47,7 @@ export const useAuthStore = create<AuthState>()(
               set({ user: null, accessToken: null, refreshToken: null });
 
               // Remove persisted storage key completely
-              localStorage.removeItem("auth-storage");
+              useAuthStore.persist.clearStorage();
             },
         }),
         {
