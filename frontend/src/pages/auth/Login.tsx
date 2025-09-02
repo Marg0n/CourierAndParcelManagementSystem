@@ -16,10 +16,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { jwtDecode, type JwtPayload } from "jwt-decode";
 import { useAuthStore } from "@/store/useAuthStore";
+import LoadingPage from "../shared/loading/LoadingPage";
 
 //* Extending JwtPayload
 interface CustomJwtPayload extends JwtPayload {
@@ -37,11 +38,14 @@ const FormSchema = z.object({
 });
 
 export function Login() {
+
   //* states
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   //* Zustand actions
-  const login = useAuthStore((state) => state.login)
+  const login = useAuthStore((state) => state.login);
+  const token = useAuthStore((state) => state.accessToken);
 
   //* Navigation
   const navigate = useNavigate();
@@ -60,6 +64,9 @@ export function Login() {
   //* submit
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
+
+      setLoading(true);
+
       const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -109,6 +116,9 @@ export function Login() {
       console.log(whereTo)
       navigate(whereTo, { replace: true });
     }
+    finally{
+      setLoading(false);
+    }
 
   }
 
@@ -123,6 +133,19 @@ export function Login() {
   const goHome = () => {
     navigate("/");
   };
+
+  //* Check if use is logged in
+  useEffect(() => {
+    if (token && location.pathname === "/login") {
+      setLoading(true);
+      toast.info("Already Logged in!");
+      navigate("/");
+      setLoading(false);
+    }
+  }, [location.pathname]);
+
+  if(loading) return <LoadingPage/>;
+
 
   return (
     <div className="flex justify-center items-center h-screen">
