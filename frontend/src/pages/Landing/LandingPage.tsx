@@ -21,7 +21,7 @@ const LandingPage = () => {
     "Delivery Agent": "agent",
   } as const;
 
-  const rolePath = user?.role && roleToPath[user.role as keyof typeof roleToPath];
+  const rolePath = user?.role && roleToPath[user.role as keyof typeof roleToPath]; //? It tells TypeScript:  “Hey, trust me, user.role will be one of the keys in roleToPath.”
 
   return (
     <ErrorBoundary>
@@ -34,13 +34,13 @@ const LandingPage = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
-                  {user?.name ? `Hello, ${user.name}` : "Account"}
+                  {user?.name ? `Hello, ${user?.name}` : "Account"}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <DropdownMenuItem onClick={() => navigate(`/dashboard/${rolePath}`)}>
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -48,6 +48,7 @@ const LandingPage = () => {
                     logout(); //? clear auth store + localStorage
                     navigate(whereTo);
                   }}
+                  className="text-red-500 hover:text-red-500!"
                 >
                   Logout
                 </DropdownMenuItem>
