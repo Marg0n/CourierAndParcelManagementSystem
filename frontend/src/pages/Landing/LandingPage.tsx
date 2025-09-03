@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import ErrorBoundary from "../shared/errors/ErrorBoundary";
 import { useAuthStore } from "@/store/useAuthStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { BadgeCheckIcon } from "lucide-react";
 
 const LandingPage = () => {
 
@@ -38,9 +40,21 @@ const LandingPage = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
+                <DropdownMenuLabel className="">
+                  {/* Logged as {" "} */}
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-600 text-white"
+                  >
+                    <BadgeCheckIcon />
+                    {user?.role}
+                  </Badge> 
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate(`/dashboard/${rolePath}`)}>
+                <DropdownMenuItem 
+                  onClick={() => navigate(`/dashboard/${rolePath}`)}
+                  className="cursor-pointer"
+                >
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -48,7 +62,7 @@ const LandingPage = () => {
                     logout(); //? clear auth store + localStorage
                     navigate(whereTo);
                   }}
-                  className="text-red-500 hover:text-red-500!"
+                  className="text-red-500 hover:text-red-500! cursor-pointer"
                 >
                   Logout
                 </DropdownMenuItem>
