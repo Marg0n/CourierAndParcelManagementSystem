@@ -300,6 +300,9 @@ async function run() {
                     }
                 );
 
+                //? Fetch the updated user data (with the latest lastLogin and lastLoginIP)
+                const updatedUser = await usersCollection.findOne({ _id: user._id });
+
                 //? Respond with success and tokens
                 res.status(200).json({
                     message: "Login successful",
@@ -310,8 +313,8 @@ async function run() {
                         name: user.name,
                         email: user.email,
                         role: user.role,
-                        lastLogin: user.lastLogin || "",      
-                        lastLoginIP: user.lastLoginIP || ""  
+                        lastLogin: updatedUser.lastLogin || "",      
+                        lastLoginIP: updatedUser.lastLoginIP || ""  
                     }
                 });
 
