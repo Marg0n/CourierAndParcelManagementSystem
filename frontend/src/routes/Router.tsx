@@ -11,6 +11,9 @@ import AllUsers from "@/components/dashboard/admin/AllUsers";
 import AdminHome from "@/components/dashboard/admin/AdminHome";
 import AllParcels from "@/components/dashboard/admin/AllParcels";
 import Analytics from "@/components/dashboard/admin/Analytics";
+import CustomerHome from "@/components/dashboard/customer/CustomerHome";
+import BookParcel from "@/components/dashboard/customer/BookParcel";
+import MyBookings from "@/components/dashboard/customer/MyBookings";
 
 
 const Router = createBrowserRouter([
@@ -53,6 +56,20 @@ const Router = createBrowserRouter([
   {
     path: "/dashboard/customer",
     element: <Protected><CustomerDashboard /></Protected>,
+    children:[
+      {
+        index: true,
+        element:<CustomerHome/>,
+      },
+      {
+        path: "book",
+        element:<BookParcel/>,
+      },
+      {
+        path: "history",
+        element:<MyBookings/>,
+      },
+    ]
   },
   {
     path: "/dashboard/agent",

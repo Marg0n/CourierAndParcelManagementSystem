@@ -62,7 +62,7 @@ const LandingPage = () => {
                     logout(); //? clear auth store + localStorage
                     navigate(whereTo);
                   }}
-                  className="text-red-500 hover:text-red-500! cursor-pointer"
+                  className="text-red-500 hover:text-red-500! hover:bg-red-300! cursor-pointer"
                 >
                   Logout
                 </DropdownMenuItem>

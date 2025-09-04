@@ -78,7 +78,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
           <NavLink
             key={link.to}
             to={link.to}
-            end={link.exact || false} // only for Dashboard link
+            end={link.exact || false} //? only for Dashboard link
             className={({ isActive }) =>
               `flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
                 isActive
