@@ -14,6 +14,9 @@ import Analytics from "@/components/dashboard/admin/Analytics";
 import CustomerHome from "@/components/dashboard/customer/CustomerHome";
 import BookParcel from "@/components/dashboard/customer/BookParcel";
 import MyBookings from "@/components/dashboard/customer/MyBookings";
+import AgentHome from "@/components/dashboard/agent/AgentHome";
+import AssignedParcels from "@/components/dashboard/agent/AssignedParcels";
+import ExportData from "@/components/dashboard/agent/ExportData";
 
 
 const Router = createBrowserRouter([
@@ -74,6 +77,20 @@ const Router = createBrowserRouter([
   {
     path: "/dashboard/agent",
     element: <Protected><AgentDashboard /></Protected>,
+    children: [
+      {
+        index: true,
+        element:<AgentHome/>,
+      },
+      {
+        path: "assigned",
+        element:<AssignedParcels/>,
+      },
+      {
+        path: "export",
+        element:<ExportData/>,
+      },
+    ]
   },
 
   //* Fallback route for undefined paths
