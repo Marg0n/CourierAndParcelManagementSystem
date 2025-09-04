@@ -394,25 +394,6 @@ async function run() {
         });
 
         //* ==================================
-        //* Get All Parcels (Admin) 
-        //* ==================================
-
-        app.get("/admin/parcels", verifyToken, verifyAdmin, async (req, res) => {
-            const result = await parcelsCollection.find().toArray();
-            res.send(result);
-        });
-
-        //* ==================================
-        //* Delivery Agent – Get Assigned Parcels 
-        //* ==================================
-
-        app.get("/agent/parcels", verifyToken, verifyDeliveryAgent, async (req, res) => {
-            const email = req.decoded.email;
-            const result = await parcelsCollection.find({ agentEmail: email }).toArray();
-            res.send(result);
-        });
-
-        //* ==================================
         //* Get User Details
         //* ==================================
 
@@ -429,6 +410,24 @@ async function run() {
             } catch (err) {
                 console.error("Error fetching user:", err);
                 res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
+        //* ===================================
+        //* Get Parcel by ID (for tracking / detail view)
+        //* ===================================
+
+        app.get("/parcels/:id", verifyToken, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
+
+                if (!parcel) return res.status(404).send({ message: "Parcel not found" });
+
+                res.send(parcel);
+            } catch (err) {
+                console.error("Error fetching parcel:", err);
+                res.status(500).send({ message: "Server error" });
             }
         });
 
@@ -459,6 +458,15 @@ async function run() {
             res.send(result);
         });
 
+        //* ==================================
+        //* Get All Parcels (Admin) 
+        //* ==================================
+
+        app.get("/admin/parcels", verifyToken, verifyAdmin, async (req, res) => {
+            const result = await parcelsCollection.find().toArray();
+            res.send(result);
+        });
+
         //* ===================================
         //* Assign an Agent to Parcel (Admin)
         //* ===================================
@@ -478,45 +486,6 @@ async function run() {
             );
 
             res.send(result);
-        });
-
-        //* ===================================
-        //* Agent Updates Parcel Status
-        //* ===================================
-
-        app.put("/parcels/:id/status", verifyToken, verifyDeliveryAgent, async (req, res) => {
-            const { id } = req.params;
-            const { status } = req.body;
-
-            const allowedStatuses = ["Picked Up", "In Transit", "Delivered", "Failed"];
-            if (!allowedStatuses.includes(status)) return res.status(400).send({ message: "Invalid status" });
-
-            const result = await parcelsCollection.updateOne(
-                { _id: new ObjectId(id), agentEmail: req.decoded.email },
-                {
-                    $set: { status }
-                }
-            );
-
-            res.send(result);
-        });
-
-        //* ===================================
-        //* Get Parcel by ID (for tracking / detail view)
-        //* ===================================
-
-        app.get("/parcels/:id", verifyToken, async (req, res) => {
-            try {
-                const { id } = req.params;
-                const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
-
-                if (!parcel) return res.status(404).send({ message: "Parcel not found" });
-
-                res.send(parcel);
-            } catch (err) {
-                console.error("Error fetching parcel:", err);
-                res.status(500).send({ message: "Server error" });
-            }
         });
 
         //* ===================================
@@ -545,6 +514,73 @@ async function run() {
                 console.error("Error fetching users:", err);
                 res.status(500).send({ message: "Server error" });
             }
+        });
+
+        //* ===================================
+        //* Parcel Metrics API (for Admin Dashboard)
+        //* ===================================
+
+        app.get("/admin/dashboard-metrics", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                const totalParcels = await parcelsCollection.countDocuments();
+
+                const dailyBookings = await parcelsCollection.countDocuments({
+                    createdAt: { $gte: todayStart }
+                });
+
+                const failedDeliveries = await parcelsCollection.countDocuments({
+                    status: "Failed"
+                });
+
+                const codParcels = await parcelsCollection.find({ paymentType: "COD" }).toArray();
+                const codNumber = codParcels.length; //? number of COD parcels
+                const codAmount = codParcels.reduce((total, parcel) => total + (parcel.price || 0), 0); //? sum of COD prices
+
+                res.send({
+                    totalParcels,
+                    dailyBookings,
+                    failedDeliveries,
+                    codAmount,
+                    codNumber
+                });
+            } catch (err) {
+                console.error("Dashboard metrics error:", err);
+                res.status(500).send({ message: "Error getting metrics" });
+            }
+        });
+
+        //* ===================================
+        //* Agent Updates Parcel Status
+        //* ===================================
+
+        app.put("/parcels/:id/status", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            const { id } = req.params;
+            const { status } = req.body;
+
+            const allowedStatuses = ["Picked Up", "In Transit", "Delivered", "Failed"];
+            if (!allowedStatuses.includes(status)) return res.status(400).send({ message: "Invalid status" });
+
+            const result = await parcelsCollection.updateOne(
+                { _id: new ObjectId(id), agentEmail: req.decoded.email },
+                {
+                    $set: { status }
+                }
+            );
+
+            res.send(result);
+        });
+
+        //* ==================================
+        //* Delivery Agent – Get Assigned Parcels 
+        //* ==================================
+
+        app.get("/agent/parcels", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            const email = req.decoded.email;
+            const result = await parcelsCollection.find({ agentEmail: email }).toArray();
+            res.send(result);
         });
 
         //* ===================================
@@ -590,42 +626,6 @@ async function run() {
             } catch (err) {
                 console.error("Error updating location:", err);
                 res.status(500).send({ message: "Server error" });
-            }
-        });
-
-        //* ===================================
-        //* Parcel Metrics API (for Admin Dashboard)
-        //* ===================================
-
-        app.get("/admin/dashboard-metrics", verifyToken, verifyAdmin, async (req, res) => {
-            try {
-                const now = new Date();
-                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-                const totalParcels = await parcelsCollection.countDocuments();
-
-                const dailyBookings = await parcelsCollection.countDocuments({
-                    createdAt: { $gte: todayStart }
-                });
-
-                const failedDeliveries = await parcelsCollection.countDocuments({
-                    status: "Failed"
-                });
-
-                const codParcels = await parcelsCollection.find({ paymentType: "COD" }).toArray();
-                const codNumber = codParcels.length; //? number of COD parcels
-                const codAmount = codParcels.reduce((total, parcel) => total + (parcel.price || 0), 0); //? sum of COD prices
-
-                res.send({
-                    totalParcels,
-                    dailyBookings,
-                    failedDeliveries,
-                    codAmount,
-                    codNumber
-                });
-            } catch (err) {
-                console.error("Dashboard metrics error:", err);
-                res.status(500).send({ message: "Error getting metrics" });
             }
         });
 
