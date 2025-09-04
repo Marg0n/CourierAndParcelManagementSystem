@@ -1,11 +1,11 @@
-import CustomerHome from "@/components/dashboard/customer/CustomerHome";
+import Customerlayout from "@/components/dashboard/customer/Customerlayout";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 
 const CustomerDashboard = () => {
   return (
     <DashboardLayout role="Customer">
-      <CustomerHome/>
+      <Customerlayout/>
     </DashboardLayout>
   );
 };
