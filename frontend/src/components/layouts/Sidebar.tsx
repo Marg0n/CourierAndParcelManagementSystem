@@ -45,11 +45,11 @@ export const Sidebar = ({ role }: SidebarProps) => {
   const rolePath = roleToPath[role];
 
   const commonLinks: LinkItem[] = [
-    { to: "/", label: "Home", icon: <Home size={18} /> },
+    { to: "/", label: "Home", icon: <Home size={20} /> },
     { 
       to: `/dashboard/${rolePath}`, 
       label: "Dashboard",
-      icon: <LayoutDashboard size={18} />,
+      icon: <LayoutDashboard size={20} />,
       exact: true, //? we'll use this for 'end' 
     },
     // { to: "/login", label: "Logout" },
@@ -57,22 +57,27 @@ export const Sidebar = ({ role }: SidebarProps) => {
 
   const roleLinks: Record<typeof role, LinkItem[]> = {
     Admin: [
-      { to: `/dashboard/${rolePath}/users`, label: "Users", icon: <Users size={18} /> },
-      { to: `/dashboard/${rolePath}/parcels`, label: "Parcels", icon: <PackageSearch size={18}/> },
-      { to: `/dashboard/${rolePath}/metrics`, label: "Analytics", icon: <BarChart size={18} /> },
+      { to: `/dashboard/${rolePath}/users`, label: "Users", icon: <Users size={20} /> },
+      { to: `/dashboard/${rolePath}/parcels`, label: "Parcels", icon: <PackageSearch size={20}/> },
+      { to: `/dashboard/${rolePath}/metrics`, label: "Analytics", icon: <BarChart size={20} /> },
     ],
     Customer: [
-      { to: `/dashboard/${rolePath}/book`, label: "Book Parcel", icon: <PlusCircle size={18} /> },
-      { to: `/dashboard/${rolePath}/history`, label: "My Bookings", icon: <History size={18} /> },
+      { to: `/dashboard/${rolePath}/book`, label: "Book Parcel", icon: <PlusCircle size={20} /> },
+      { to: `/dashboard/${rolePath}/history`, label: "My Bookings", icon: <History size={20} /> },
     ],
     "Delivery Agent": [
-      { to: `/dashboard/${rolePath}/assigned`, label: "Assigned Parcels", icon: <Truck size={18} />  },
-      { to: `/dashboard/${rolePath}/export`, label: "Export Data", icon: <Download size={18} /> },
+      { to: `/dashboard/${rolePath}/assigned`, label: "Assigned Parcels", icon: <Truck size={20} />  },
+      { to: `/dashboard/${rolePath}/export`, label: "Export Data", icon: <Download size={20} /> },
     ],
   }
 
   return (
-    <aside className="w-64 bg-white shadow-md h-screen p-6 flex flex-col justify-between">
+    <aside className="
+        w-16 lg:w-64 
+        bg-white shadow-md h-screen 
+        p-4 lg:p-6 flex flex-col justify-between
+        transition-all duration-300
+    ">
       <nav className="flex flex-col gap-2">
         {[...commonLinks, ...roleLinks[role]].map((link) => (
           <NavLink
@@ -80,15 +85,17 @@ export const Sidebar = ({ role }: SidebarProps) => {
             to={link.to}
             end={link.exact || false} //? only for Dashboard link
             className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
+              `flex items-center px-1 lg:px-3 py-2 rounded-md transition-colors ${
                 isActive
                   ? "bg-sky-100 text-sky-700 font-semibold"
                   : "text-gray-700 hover:bg-gray-100 hover:text-sky-600"
               }`
             }
           >
+            {/* Icon always visible */}
             {link.icon}
-            {link.label}
+            {/* Label only on lg+ screens */}
+            <span className="hidden lg:inline ml-2">{link.label}</span>
           </NavLink>
         ))}
       </nav>
@@ -97,8 +104,8 @@ export const Sidebar = ({ role }: SidebarProps) => {
         onClick={() => logout()}
         className="flex items-center gap-2 mt-8 text-red-600 hover:text-red-800 font-medium cursor-pointer"
       >
-        <LogOut size={18} />
-        Logout
+        <LogOut size={20} />        
+        <span className="hidden lg:inline ml-2">Logout</span>
       </button>
     </aside>
   )
