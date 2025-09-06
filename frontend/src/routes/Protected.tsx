@@ -77,7 +77,9 @@ const Protected: React.FC<ProtectedProps> = ({ children }) => {
         const refreshed = await refreshAccessToken();
 
         if (!refreshed) {
-          toast.error("Logged out!");
+          toast.error("Logged out!",{
+            duration: 1000,
+          });
           logout();
           navigate("/login");
           return;

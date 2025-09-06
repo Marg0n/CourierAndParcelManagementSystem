@@ -8,6 +8,6 @@ import { Toaster } from "sonner";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RouterProvider router={Router} />
-    <Toaster richColors closeButton position="top-center"  />
+    <Toaster richColors closeButton position="bottom-right"  />
   </StrictMode>,
 );

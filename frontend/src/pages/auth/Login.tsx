@@ -63,6 +63,10 @@ export function Login() {
 
   //* submit
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+
+    //* sonner loading
+    const toastId = toast.loading("Logging in...");
+
     try {
 
       setLoading(true);
@@ -98,7 +102,9 @@ export function Login() {
       
 
       toast.success("Login successful", {
+        id: toastId,
         description: result.message,
+        duration: 2000,
       });
 
       //* redirect to dashboard or protected page based on role
@@ -111,7 +117,9 @@ export function Login() {
     catch (error: any) {
 
       toast.error("Login failed", {
+        id: toastId,
         description: error.message,
+        duration: 2000,
       });
       console.log(whereTo)
       navigate(whereTo, { replace: true });
@@ -138,7 +146,9 @@ export function Login() {
   useEffect(() => {
     if (token && location.pathname === "/login") {
       setLoading(true);
-      toast.info("Already Logged in!");
+      toast.info("Already Logged in!",{
+        duration: 2000,
+      });
       navigate("/");
       setLoading(false);
     }
