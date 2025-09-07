@@ -465,7 +465,7 @@ async function run() {
             
                 //? Ensure the parcel belongs to the logged-in customer
                 const parcel = await parcelsCollection.findOne(
-                    { _id: new ObjectId(id), customerEmail: email },
+                    { _id: new ObjectId(id), email: email },
                     { projection: { trackingHistory: 1, currentLocation: 1, status: 1 } }
                 );
             
@@ -484,7 +484,37 @@ async function run() {
                 res.status(500).json({ message: "Server error" });
             }
         });
-  
+        //* ===================================
+        //* Get Parcel Tracking History (Admin)
+        //* ===================================
+
+        app.get("/admin/parcels/:id/tracking", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const { id } = req.params;
+            
+                const parcel = await parcelsCollection.findOne(
+                    { _id: new ObjectId(id) },
+                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1, customerEmail: 1, agentEmail: 1 } }
+                );
+            
+                if (!parcel) {
+                    return res.status(404).json({ message: "Parcel not found" });
+                }
+            
+                res.status(200).json({
+                    customerEmail: parcel.customerEmail,
+                    agentEmail: parcel.agentEmail || null,
+                    status: parcel.status,
+                    currentLocation: parcel.currentLocation || null,
+                    trackingHistory: parcel.trackingHistory || []
+                });
+            } 
+            catch (err) {
+                console.error("Error fetching parcel tracking (Admin):", err);
+                res.status(500).json({ message: "Server error" });
+            }
+        });
+    
 
         //* ===================================
         //* Assign an Agent to Parcel (Admin)
