@@ -404,7 +404,7 @@ async function run() {
         });
 
         //* ===================================
-        //* Get Parcel by ID (for tracking / detail view)
+        //* Get Parcel by ID (for detail view)
         //* ===================================
 
         app.get("/parcels/:id", verifyToken, async (req, res) => {
@@ -420,6 +420,66 @@ async function run() {
                 res.status(500).send({ message: "Server error" });
             }
         });
+
+        //* ===================================
+        //* Unified Parcel Tracking Endpoint with Admin Extra Details
+        //* ===================================
+
+        app.get("/parcels/:id/tracking", verifyToken, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const { role, email } = req.decoded;
+            
+                if (!id) return res.status(400).json({ message: "Parcel ID is required" });
+            
+                let query = { _id: new ObjectId(id) };
+            
+                //* Role-based filtering
+                if (role === "Customer") {
+                    query.email = email; //? Only their parcels
+                } else if (role === "Delivery Agent") {
+                    query.agentEmail = email; //? Only assigned parcels
+                }
+                //! Admin: Needs no additional filter
+            
+                const parcel = await parcelsCollection.findOne(query);
+            
+                if (!parcel) {
+                    return res.status(404).json({ message: "Parcel not found or access denied" });
+                }
+            
+                //* Prepare base response
+                const response = {
+                    id: parcel._id,
+                    status: parcel.status,
+                    currentLocation: parcel.currentLocation || null,
+                    trackingHistory: parcel.trackingHistory || [],
+                    assignedAgent: parcel.agentEmail || null,
+                    customerEmail: parcel.email || null,
+                    createdAt: parcel.createdAt,
+                    deliveryDate: parcel.deliveryDate || null
+                };
+            
+                //* Add extra details if Admin
+                if (role === "Admin") {
+                    response.parcelType = parcel.parcelType || null;
+                    response.size = parcel.size || null;
+                    response.price = parcel.price || null;
+                    response.paymentType = parcel.paymentType || null;
+                    response.deliveryInstructions = parcel.deliveryInstructions || null;
+                    response.contact = parcel.contact || null;
+                    response.pickupAddress = parcel.pickupAddress || null;
+                    response.deliveryAddress = parcel.deliveryAddress || null;
+                    response.barcode = parcel.barcode || null;
+                }
+            
+                res.status(200).json(response);
+            } 
+            catch (err) {
+                console.error("Tracking error:", err);
+                res.status(500).json({ message: "Internal server error", error: err?.message });
+            }
+        });        
 
         //* ===================================
         //* Create Parcel API (Customer only)
@@ -453,67 +513,6 @@ async function run() {
 
             res.send(result);
         });
-
-        //* ===================================
-        //* Get Parcel Tracking History (Customer)
-        //* ===================================
-
-        app.get("/parcels/:id/tracking", verifyToken, verifyCustomer, async (req, res) => {
-            try {
-                const { id } = req.params;
-                const email = req.decoded.email;
-            
-                //? Ensure the parcel belongs to the logged-in customer
-                const parcel = await parcelsCollection.findOne(
-                    { _id: new ObjectId(id), email: email },
-                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1 } }
-                );
-            
-                if (!parcel) {
-                    return res.status(404).json({ message: "Parcel not found or unauthorized" });
-                }
-            
-                res.status(200).json({
-                    status: parcel.status,
-                    currentLocation: parcel.currentLocation || null,
-                    trackingHistory: parcel.trackingHistory || []
-                });
-            } 
-            catch (err) {
-                console.error("Error fetching tracking history:", err);
-                res.status(500).json({ message: "Server error" });
-            }
-        });
-        //* ===================================
-        //* Get Parcel Tracking History (Admin)
-        //* ===================================
-
-        app.get("/admin/parcels/:id/tracking", verifyToken, verifyAdmin, async (req, res) => {
-            try {
-                const { id } = req.params;
-            
-                const parcel = await parcelsCollection.findOne(
-                    { _id: new ObjectId(id) },
-                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1, customerEmail: 1, agentEmail: 1 } }
-                );
-            
-                if (!parcel) {
-                    return res.status(404).json({ message: "Parcel not found" });
-                }
-            
-                res.status(200).json({
-                    customerEmail: parcel.customerEmail,
-                    agentEmail: parcel.agentEmail || null,
-                    status: parcel.status,
-                    currentLocation: parcel.currentLocation || null,
-                    trackingHistory: parcel.trackingHistory || []
-                });
-            } 
-            catch (err) {
-                console.error("Error fetching parcel tracking (Admin):", err);
-                res.status(500).json({ message: "Server error" });
-            }
-        });    
 
         //* ===================================
         //* Assign an Agent to Parcel (Admin)
@@ -672,38 +671,6 @@ async function run() {
                 res.status(500).send({ message: "Server error" });
             }
         });
-
-        //* ===================================
-        //* Get Parcel Tracking History (Delivery Agent)
-        //* ===================================
-
-        app.get("/agent/parcels/:id/tracking", verifyToken, verifyDeliveryAgent, async (req, res) => {
-            try {
-                const { id } = req.params;
-                const agentEmail = req.decoded.email;
-            
-                // Only fetch if this parcel is assigned to the logged-in agent
-                const parcel = await parcelsCollection.findOne(
-                    { _id: new ObjectId(id), email: agentEmail },
-                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1, customerEmail: 1 } }
-                );
-            
-                if (!parcel) {
-                    return res.status(404).json({ message: "Parcel not found or not assigned to you" });
-                }
-            
-                res.status(200).json({
-                    customerEmail: parcel.customerEmail,
-                    status: parcel.status,
-                    currentLocation: parcel.currentLocation || null,
-                    trackingHistory: parcel.trackingHistory || []
-                });
-            } 
-            catch (err) {
-                console.error("Error fetching parcel tracking (Agent):", err);
-                res.status(500).json({ message: "Server error" });
-            }
-        });  
 
         //* ===================================
         //* Export Bookings as CSV
