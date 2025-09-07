@@ -426,13 +426,19 @@ async function run() {
         //* ===================================
 
         app.post("/parcels", verifyToken, verifyCustomer, async (req, res) => {
-            const parcel = req.body;
-            parcel.status = "Pending";
-            parcel.createdAt = new Date();
-            parcel.customerEmail = req.decoded.email;
+            try{
+                const parcel = req.body;
+                parcel.status = "Pending";
+                parcel.createdAt = new Date();
+                parcel.customerEmail = req.decoded.email;
 
-            const result = await parcelsCollection.insertOne(parcel);
-            res.send(result);
+                const result = await parcelsCollection.insertOne(parcel);
+                res.send(result);
+            }
+            catch (err) {
+                console.error("Error creating parcel:", err);
+                res.status(500).send({ message: "Server error" });
+            }
         });
 
         //* ===================================
@@ -453,20 +459,26 @@ async function run() {
         //* ===================================
 
         app.put("/parcels/:id/assign", verifyToken, verifyAdmin, async (req, res) => {
-            const { id } = req.params;
-            const { agentEmail } = req.body;
+            try {
+                const { id } = req.params;
+                const { agentEmail } = req.body;
 
-            const result = await parcelsCollection.updateOne(
-                { _id: new ObjectId(id) },
-                {
-                    $set: {
-                        agentEmail,
-                        status: "Assigned"
+                const result = await parcelsCollection.updateOne(
+                    { _id: new ObjectId(id) },
+                    {
+                        $set: {
+                            agentEmail,
+                            status: "Assigned"
+                        }
                     }
-                }
-            );
+                );
 
-            res.send(result);
+                res.send(result);
+            }
+            catch (err) {
+                console.error("Error assigning parcel:", err);
+                res.status(500).send({ message: "Server error" });
+            }
         });
 
         //* ===================================
