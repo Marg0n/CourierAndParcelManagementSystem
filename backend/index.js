@@ -384,16 +384,6 @@ async function run() {
         });
 
         //* ==================================
-        //* Get Parcel Details by ID 
-        //* ==================================
-
-        app.get("/parcels/:id", verifyToken, async (req, res) => {
-            const { id } = req.params;
-            const parcel = await parcelsCollection.findOne({ _id: new ObjectId(id) });
-            res.send(parcel);
-        });
-
-        //* ==================================
         //* Get User Details
         //* ==================================
 
@@ -455,15 +445,6 @@ async function run() {
                 .find({ customerEmail: email })
                 .toArray();
 
-            res.send(result);
-        });
-
-        //* ==================================
-        //* Get All Parcels (Admin) 
-        //* ==================================
-
-        app.get("/admin/parcels", verifyToken, verifyAdmin, async (req, res) => {
-            const result = await parcelsCollection.find().toArray();
             res.send(result);
         });
 
@@ -570,16 +551,6 @@ async function run() {
                 }
             );
 
-            res.send(result);
-        });
-
-        //* ==================================
-        //* Delivery Agent – Get Assigned Parcels 
-        //* ==================================
-
-        app.get("/agent/parcels", verifyToken, verifyDeliveryAgent, async (req, res) => {
-            const email = req.decoded.email;
-            const result = await parcelsCollection.find({ agentEmail: email }).toArray();
             res.send(result);
         });
 
