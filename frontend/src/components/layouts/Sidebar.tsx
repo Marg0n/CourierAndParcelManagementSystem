@@ -2,6 +2,7 @@
 import { NavLink } from "react-router-dom"
 import {
   LayoutDashboard,
+  User,
   Users,
   PackageSearch,
   BarChart,
@@ -51,6 +52,11 @@ export const Sidebar = ({ role }: SidebarProps) => {
       label: "Dashboard",
       icon: <LayoutDashboard size={20} />,
       exact: true, //? we'll use this for 'end' 
+    },
+    { 
+      to: `/dashboard/${rolePath}/user`, 
+      label: "User Profile", 
+      icon: <User size={20} />, 
     },
     // { to: "/login", label: "Logout" },
   ]

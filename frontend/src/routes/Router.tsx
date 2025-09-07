@@ -17,6 +17,7 @@ import MyBookings from "@/components/dashboard/customer/MyBookings";
 import AgentHome from "@/components/dashboard/agent/AgentHome";
 import AssignedParcels from "@/components/dashboard/agent/AssignedParcels";
 import ExportData from "@/components/dashboard/agent/ExportData";
+import UserProfile from "@/components/dashboard/shared/UserProfile";
 
 
 const Router = createBrowserRouter([
@@ -47,6 +48,10 @@ const Router = createBrowserRouter([
         element:<AllUsers />,
       },
       {
+        path: "user",
+        element:<UserProfile />,
+      },
+      {
         path: "parcels",
         element:<AllParcels />,
       },
@@ -65,6 +70,10 @@ const Router = createBrowserRouter([
         element:<CustomerHome/>,
       },
       {
+        path: "user",
+        element:<UserProfile />,
+      },
+      {
         path: "book",
         element:<BookParcel/>,
       },
@@ -81,6 +90,10 @@ const Router = createBrowserRouter([
       {
         index: true,
         element:<AgentHome/>,
+      },
+      {
+        path: "user",
+        element:<UserProfile />,
       },
       {
         path: "assigned",
