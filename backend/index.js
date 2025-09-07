@@ -337,9 +337,9 @@ async function run() {
                 if(!refreshToken) return res.status(401).json({ message: "Unauthorized: Refresh token is missing!"});
     
                 //* Prevents 
-                if(!refreshToken.includes(refreshToken)) {
-                    return res.status(403).json({ message: "Forbidden: Refresh token is invalid or expired." });
-                }
+                // if(!refreshToken.includes(refreshToken)) {
+                //     return res.status(403).json({ message: "Forbidden: Refresh token is invalid or expired." });
+                // }
     
                 jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (error, decode) => {
     
