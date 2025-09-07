@@ -606,7 +606,10 @@ async function run() {
 
         app.get("/agent/export-csv", verifyToken, verifyDeliveryAgent, async (req, res) => {
             try {
-                const parcels = await parcelsCollection.find().toArray();
+                const agentEmail = req.decoded.email;
+        
+                //? Only parcels assigned to this delivery agent
+                const parcels = await parcelsCollection.find({ agentEmail }).toArray();
 
                 if (!parcels.length) {
                     return res.status(404).send({ message: "No parcels found to export" });
