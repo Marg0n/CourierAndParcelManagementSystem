@@ -455,6 +455,38 @@ async function run() {
         });
 
         //* ===================================
+        //* Get Parcel Tracking History (Customer)
+        //* ===================================
+
+        app.get("/parcels/:id/tracking", verifyToken, verifyCustomer, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const email = req.decoded.email;
+            
+                //? Ensure the parcel belongs to the logged-in customer
+                const parcel = await parcelsCollection.findOne(
+                    { _id: new ObjectId(id), customerEmail: email },
+                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1 } }
+                );
+            
+                if (!parcel) {
+                    return res.status(404).json({ message: "Parcel not found or unauthorized" });
+                }
+            
+                res.status(200).json({
+                    status: parcel.status,
+                    currentLocation: parcel.currentLocation || null,
+                    trackingHistory: parcel.trackingHistory || []
+                });
+            } 
+            catch (err) {
+                console.error("Error fetching tracking history:", err);
+                res.status(500).json({ message: "Server error" });
+            }
+        });
+  
+
+        //* ===================================
         //* Assign an Agent to Parcel (Admin)
         //* ===================================
 
