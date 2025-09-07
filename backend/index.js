@@ -513,8 +513,7 @@ async function run() {
                 console.error("Error fetching parcel tracking (Admin):", err);
                 res.status(500).json({ message: "Server error" });
             }
-        });
-    
+        });    
 
         //* ===================================
         //* Assign an Agent to Parcel (Admin)
@@ -675,6 +674,38 @@ async function run() {
         });
 
         //* ===================================
+        //* Get Parcel Tracking History (Delivery Agent)
+        //* ===================================
+
+        app.get("/agent/parcels/:id/tracking", verifyToken, verifyDeliveryAgent, async (req, res) => {
+            try {
+                const { id } = req.params;
+                const agentEmail = req.decoded.email;
+            
+                // Only fetch if this parcel is assigned to the logged-in agent
+                const parcel = await parcelsCollection.findOne(
+                    { _id: new ObjectId(id), email: agentEmail },
+                    { projection: { trackingHistory: 1, currentLocation: 1, status: 1, customerEmail: 1 } }
+                );
+            
+                if (!parcel) {
+                    return res.status(404).json({ message: "Parcel not found or not assigned to you" });
+                }
+            
+                res.status(200).json({
+                    customerEmail: parcel.customerEmail,
+                    status: parcel.status,
+                    currentLocation: parcel.currentLocation || null,
+                    trackingHistory: parcel.trackingHistory || []
+                });
+            } 
+            catch (err) {
+                console.error("Error fetching parcel tracking (Agent):", err);
+                res.status(500).json({ message: "Server error" });
+            }
+        });  
+
+        //* ===================================
         //* Export Bookings as CSV
         //* ===================================
 
@@ -683,7 +714,7 @@ async function run() {
                 const agentEmail = req.decoded.email;
         
                 //? Only parcels assigned to this delivery agent
-                const parcels = await parcelsCollection.find({ agentEmail }).toArray();
+                const parcels = await parcelsCollection.find({ email: agentEmail }).toArray();
 
                 if (!parcels.length) {
                     return res.status(404).send({ message: "No parcels found to export" });
@@ -727,7 +758,7 @@ async function run() {
                 const agentEmail = req.decoded.email;
         
                 //? Only parcels assigned to this delivery agent
-                const parcels = await parcelsCollection.find({ agentEmail }).toArray();
+                const parcels = await parcelsCollection.find({ email: agentEmail }).toArray();
         
                 if (!parcels.length) {
                     return res.status(404).send({ message: "No parcels assigned to you." });
