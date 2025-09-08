@@ -68,8 +68,8 @@ export const Sidebar = ({ role }: SidebarProps) => {
 
   const roleLinks: Record<typeof role, LinkItem[]> = {
     Admin: [
-      { to: `/dashboard/${rolePath}/users`, label: "Users", icon: <Users size={20} /> },
-      { to: `/dashboard/${rolePath}/parcels`, label: "Parcels", icon: <PackageSearch size={20}/> },
+      { to: `/dashboard/${rolePath}/users`, label: "All Users", icon: <Users size={20} /> },
+      { to: `/dashboard/${rolePath}/parcels`, label: "All Parcels", icon: <PackageSearch size={20}/> },
       { to: `/dashboard/${rolePath}/metrics`, label: "Analytics", icon: <BarChart size={20} /> },
     ],
     Customer: [
