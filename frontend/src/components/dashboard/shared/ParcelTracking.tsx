@@ -18,12 +18,14 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
+//* Interface for tracking
 interface TrackingEvent {
   status: string;
   timestamp: string;
   location?: { lat: number; lng: number };
 }
 
+//* Interface for parcel
 interface Parcel {
   _id: string;
   customerEmail: string;
@@ -34,7 +36,8 @@ interface Parcel {
 }
 
 export const ParcelTracking = () => {
-  const { id } = useParams(); // Parcel ID
+
+  const { id } = useParams(); //? Parcel ID
   const token = useAuthStore((state) => state.accessToken);
 
   const [parcel, setParcel] = useState<Parcel | null>(null);
@@ -43,7 +46,7 @@ export const ParcelTracking = () => {
   //* Fetch parcel tracking data
   useEffect(() => {
     const fetchParcel = async () => {
-      if (!id || !token) return;
+      if (!id || !token) return setLoading(false);
 
       try {
         const res = await fetch(`http://localhost:5000/parcels/${id}/tracking`, {
@@ -53,6 +56,7 @@ export const ParcelTracking = () => {
         });
 
         const data = await res.json();
+        console.log(data)
         setParcel(data);
       } catch (err) {
         console.error("Error fetching parcel:", err);
@@ -65,7 +69,8 @@ export const ParcelTracking = () => {
   }, [id, token]);
 
   if (loading) return <LoadingDashboard />;
-  if (!parcel) return <div className="text-center text-red-500">Parcel not found</div>;
+  
+  if (!parcel) return <div className="flex justify-center items-center-safe text-red-500 h-full">Parcel not found!</div>;
 
   return (
     <div className="flex flex-col md:flex-row gap-4 p-4">
