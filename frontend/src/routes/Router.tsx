@@ -18,6 +18,7 @@ import AgentHome from "@/components/dashboard/agent/AgentHome";
 import AssignedParcels from "@/components/dashboard/agent/AssignedParcels";
 import ExportData from "@/components/dashboard/agent/ExportData";
 import UserProfile from "@/components/dashboard/shared/UserProfile";
+import { ParcelTracking } from "@/components/dashboard/shared/ParcelTracking";
 
 
 const Router = createBrowserRouter([
@@ -59,6 +60,10 @@ const Router = createBrowserRouter([
         path: "metrics",
         element:<Analytics />,
       },
+      {
+        path: "tracking",
+        element:<ParcelTracking />,
+      },
     ]
   },
   {
@@ -81,6 +86,10 @@ const Router = createBrowserRouter([
         path: "history",
         element:<MyBookings/>,
       },
+      {
+        path: "tracking",
+        element:<ParcelTracking />,
+      },
     ]
   },
   {
@@ -102,6 +111,10 @@ const Router = createBrowserRouter([
       {
         path: "export",
         element:<ExportData/>,
+      },
+      {
+        path: "tracking",
+        element:<ParcelTracking />,
       },
     ]
   },

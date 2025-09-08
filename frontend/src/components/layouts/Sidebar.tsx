@@ -58,6 +58,11 @@ export const Sidebar = ({ role }: SidebarProps) => {
       label: "User Profile", 
       icon: <User size={20} />, 
     },
+    { 
+      to: `/dashboard/${rolePath}/tracking`, 
+      label: "Parcel Tracking", 
+      icon: <Truck size={20} />, 
+    },
     // { to: "/login", label: "Logout" },
   ]
 
