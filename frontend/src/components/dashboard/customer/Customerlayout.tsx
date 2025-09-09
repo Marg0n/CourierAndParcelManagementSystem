@@ -1,12 +1,12 @@
 
-import ErrorBoundary from '@/pages/shared/errors/ErrorBoundary';
+import ErrorBoundaryWrapper from '@/pages/shared/errors/ErrorBoundary';
 import { Outlet } from 'react-router-dom';
 
 const Customerlayout = () => {
     return (
-        <ErrorBoundary>
+        <ErrorBoundaryWrapper>
             <Outlet/>
-        </ErrorBoundary>
+        </ErrorBoundaryWrapper>
     );
 };
 

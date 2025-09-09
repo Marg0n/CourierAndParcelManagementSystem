@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
-import ErrorBoundary from "../shared/errors/ErrorBoundary";
+import ErrorBoundaryWrapper from "../shared/errors/ErrorBoundary";
 import { useAuthStore } from "@/store/useAuthStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +26,7 @@ const LandingPage = () => {
   const rolePath = user?.role && roleToPath[user.role as keyof typeof roleToPath]; //? It tells TypeScript:  “Hey, trust me, user.role will be one of the keys in roleToPath.”
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundaryWrapper>
       <div className="min-h-screen bg-gradient-to-b from-white via-sky-100 to-sky-200 flex flex-col">
         {/* Header */}
         <header className="px-6 py-4 flex justify-between items-center">
@@ -93,7 +93,7 @@ const LandingPage = () => {
           © {new Date().getFullYear()} CourierTrack. All rights reserved.
         </footer>
       </div>
-    </ErrorBoundary>
+    </ErrorBoundaryWrapper>
   );
 };
 
