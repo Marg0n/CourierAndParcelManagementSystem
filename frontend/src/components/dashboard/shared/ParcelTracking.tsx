@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useAuthStore } from "@/store/useAuthStore";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
+import { Button } from "@/components/ui/button";
 
 //* Fix Leaflet default icon issue
 delete (L.Icon.Default as any).prototype._getIconUrl;
@@ -43,6 +44,9 @@ export const ParcelTracking = () => {
   const [parcel, setParcel] = useState<Parcel | null>(null);
   const [loading, setLoading] = useState(true);
 
+  //* Navigation
+  const navigate = useNavigate();
+
   //* Fetch parcel tracking data
   useEffect(() => {
     const fetchParcel = async () => {
@@ -54,6 +58,13 @@ export const ParcelTracking = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (!res.ok) {
+          const error = await res.json();
+          console.error("Tracking fetch failed:", error);
+          setParcel(null);
+          return;
+        }
 
         const data = await res.json();
         console.log(data)
@@ -70,7 +81,18 @@ export const ParcelTracking = () => {
 
   if (loading) return <LoadingPage />;
   
-  if (!parcel) return <div className="flex justify-center items-center-safe text-red-500 h-full">Parcel not found!</div>;
+  if (!parcel) return (
+    <>
+      <div className="flex flex-col justify-center items-center-safe text-red-500 h-full">
+        <h1 className="text-5xl font-bold text-sky-800 mb-4">
+          Parcel not found!
+        </h1>
+        <Button size="lg" onClick={() => navigate(-1)}>
+            Go Back
+        </Button>
+      </div>
+    </>
+  );
 
   return (
     <div className="flex flex-col md:flex-row gap-4 p-4">
@@ -103,7 +125,7 @@ export const ParcelTracking = () => {
           center={
             parcel.currentLocation
               ? [parcel.currentLocation.lat, parcel.currentLocation.lng]
-              : [23.8103, 90.4125] // fallback: Dhaka
+              : [23.8103, 90.4125] //? fallback: Dhaka
           }
           zoom={13}
           scrollWheelZoom={false}

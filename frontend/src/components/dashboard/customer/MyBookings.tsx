@@ -101,7 +101,7 @@ const MyBookings = () => {
             key={parcel._id}
             className="border rounded-lg p-4 shadow-sm bg-white hover:shadow-md transition"
           >
-            {/* ✅ Status + Created Date */}
+            {/* Status + Created Date */}
             <div className="flex justify-between items-center">
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${
@@ -119,7 +119,7 @@ const MyBookings = () => {
               </span>
             </div>
 
-            {/* ✅ Agent info if available */}
+            {/* Agent info if available */}
             {parcel.agentEmail && (
               <p className="text-sm text-gray-600 mt-1">
                 Assigned Agent:{" "}
@@ -127,7 +127,7 @@ const MyBookings = () => {
               </p>
             )}
 
-            {/* ✅ Track button -> navigates to ParcelTracking */}
+            {/* Track button -> navigates to ParcelTracking */}
             <button
               onClick={() =>
                 navigate(`/dashboard/customer/tracking/${parcel._id}`)
