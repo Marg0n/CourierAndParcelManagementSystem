@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useAuthStore } from "@/store/useAuthStore";
-import LoadingDashboard from "@/pages/shared/loading/LoadingDashboard";
+import LoadingPage from "@/pages/shared/loading/LoadingPage";
 
 //* Fix Leaflet default icon issue
 delete (L.Icon.Default as any).prototype._getIconUrl;
@@ -68,7 +68,7 @@ export const ParcelTracking = () => {
     fetchParcel();
   }, [id, token]);
 
-  if (loading) return <LoadingDashboard />;
+  if (loading) return <LoadingPage />;
   
   if (!parcel) return <div className="flex justify-center items-center-safe text-red-500 h-full">Parcel not found!</div>;
 

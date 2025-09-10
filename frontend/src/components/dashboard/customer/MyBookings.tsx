@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import LoadingDashboard from "@/pages/shared/loading/LoadingDashboard";
+import LoadingPage from "@/pages/shared/loading/LoadingPage";
 
 //* Interface for booking/parcel
 interface Parcel {
@@ -42,7 +42,7 @@ const MyBookings = () => {
     fetchBookings();
   }, [token]);
 
-  if (loading) return <LoadingDashboard />;
+  if (loading) return <LoadingPage />;
 
   return (
     <div className="p-4">

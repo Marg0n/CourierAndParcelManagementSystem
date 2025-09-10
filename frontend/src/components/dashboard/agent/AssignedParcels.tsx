@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
-import LoadingDashboard from "@/pages/shared/loading/LoadingDashboard";
+import LoadingPage from "@/pages/shared/loading/LoadingPage";
 
 //* Interface
 interface Parcel {
@@ -42,7 +42,7 @@ const AssignedParcels = () => {
     fetchParcels();
   }, [token]);
 
-  if (loading) return <LoadingDashboard />;
+  if (loading) return <LoadingPage />;
 
   return (
     <>
