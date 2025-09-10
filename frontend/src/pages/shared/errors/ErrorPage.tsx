@@ -26,15 +26,16 @@ const ErrorPage = () => {
       <p className="text-lg text-gray-600 mb-6">
         Oops! The page you're looking for doesn't exist.
       </p>
-      <div 
-        className={clsx(
-          isDashboardRoute ? "hidden" : "flex gap-4"
-        )}
-      >
+      <div className="flex gap-4">
         <Button size="lg" onClick={() => navigate(-1)}>
           Go Back
         </Button>
-        <Button size="lg" onClick={() => navigate("/")}>
+        <Button 
+          className={clsx(
+            isDashboardRoute ? "hidden" : ""
+          )}
+          size="lg" onClick={() => navigate("/")}
+        >
           Go Back to Home
         </Button>
       </div>
