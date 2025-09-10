@@ -9,7 +9,8 @@ const UserProfile = () => {
   const { user } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Local state for editable fields
+  //* Local state for editable fields
+  //TODO: need to do further improvements
   const [formData, setFormData] = useState({
     name: user?.name || "",
     email: user?.email || "",
