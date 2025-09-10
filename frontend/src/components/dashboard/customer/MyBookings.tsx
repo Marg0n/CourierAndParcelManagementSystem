@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
@@ -12,22 +13,28 @@ interface Parcel {
 
 const MyBookings = () => {
   const token = useAuthStore((state) => state.accessToken);
-  const [bookings, setBookings] = useState<Parcel[]>([]);
+  const [bookings, setBookings] = useState<Parcel[] | any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   //* Fetch customer bookings
+  //TODO: need to do further improvements
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch("http://localhost:5000/parcels/myBooking", {
+        // const res = await fetch("http://localhost:5000/parcels/myBooking", {
+        const res = await fetch("/parcels.json", {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         const data = await res.json();
-        setBookings(data);
+        
+        //? Normalize: if it's not an array, fallback to []
+        setBookings(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching bookings:", err);
+        setBookings([]); //? fallback
       } finally {
         setLoading(false);
       }
@@ -51,7 +58,7 @@ const MyBookings = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings?.map((parcel) => (
+            {bookings && bookings?.map((parcel) => (
               <tr key={parcel._id} className="border-t">
                 <td className="px-4 py-2">{parcel._id}</td>
                 <td className="px-4 py-2">{parcel.status}</td>
@@ -59,7 +66,7 @@ const MyBookings = () => {
                   {new Date(parcel.createdAt).toLocaleString()}
                 </td>
                 <td className="px-4 py-2">
-                  {/* ✅ Track button navigates to ParcelTracking */}
+                  {/* Track button navigates to ParcelTracking */}
                   <button
                     onClick={() =>
                       navigate(`/dashboard/customer/tracking/${parcel._id}`)

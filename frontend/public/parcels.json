@@ -1,0 +1,53 @@
+[
+    {
+      "_id": "66e1c0d47d9f91b87d001111",
+      "customerEmail": "customer1@example.com",
+      "agentEmail": "agent1@example.com",
+      "status": "In Transit",
+      "trackingHistory": [
+        {
+          "status": "Parcel Booked",
+          "timestamp": "2025-09-01T08:30:00Z",
+          "location": { "lat": 23.8103, "lng": 90.4125 } 
+        },
+        {
+          "status": "Picked Up",
+          "timestamp": "2025-09-02T09:00:00Z",
+          "location": { "lat": 23.7500, "lng": 90.3900 } 
+        },
+        {
+          "status": "In Transit",
+          "timestamp": "2025-09-03T12:00:00Z",
+          "location": { "lat": 24.3636, "lng": 88.6241 } 
+        }
+      ],
+      "currentLocation": { "lat": 24.3636, "lng": 88.6241 },
+      "createdAt": "2025-09-01T08:25:00Z"
+    },
+    {
+      "_id": "66e1c0d47d9f91b87d002222",
+      "customerEmail": "customer1@example.com",
+      "agentEmail": "agent2@example.com",
+      "status": "Delivered",
+      "trackingHistory": [
+        {
+          "status": "Parcel Booked",
+          "timestamp": "2025-09-01T10:30:00Z",
+          "location": { "lat": 23.8103, "lng": 90.4125 }
+        },
+        {
+          "status": "Picked Up",
+          "timestamp": "2025-09-02T14:00:00Z",
+          "location": { "lat": 23.9000, "lng": 90.4000 }
+        },
+        {
+          "status": "Delivered",
+          "timestamp": "2025-09-04T18:00:00Z",
+          "location": { "lat": 22.3475, "lng": 91.8123 }
+        }
+      ],
+      "currentLocation": { "lat": 22.3475, "lng": 91.8123 },
+      "createdAt": "2025-09-01T10:25:00Z"
+    }
+  ]
+  
