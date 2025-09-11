@@ -51,7 +51,7 @@ app.set('trust proxy', true);
 const verifyToken = async (req, res, next) => {
     // const initialToken = await req.header.authorization;
     const initialToken = req.headers['authorization'];
-    console.log("Authorization header :::>", initialToken);
+    // console.log("Authorization header :::>", initialToken);
 
     //? from local storage
     if (!initialToken) return res.status(401).send({ message: "Unauthorized access!" });
