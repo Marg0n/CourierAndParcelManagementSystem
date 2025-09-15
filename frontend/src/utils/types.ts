@@ -6,9 +6,9 @@ export interface TUser {
       _id: string;
       name: string;
       email: string;
-      role: "admin" | "customer";
-      status: "active" | "inactive";
-      needsPasswordChange: boolean;
+      role: "Admin" | "Customer" | "Delivery Agent";
+      status?: "active" | "inactive";
+      needsPasswordChange?: boolean;
       passwordChangedAt?: Date;
       createdAt?: Date;
       updatedAt?: Date;
@@ -24,5 +24,7 @@ export interface TUser {
       state?: string;
       zipCode?: string;
       isDeleted?: boolean;
+      lastLogin?: Date;
+      lastLoginIP?: string;
     };
   }
