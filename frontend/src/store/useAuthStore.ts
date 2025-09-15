@@ -6,8 +6,8 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: string;
-  lastLogin?: string;
+  role: "Admin" | "Customer" | "Delivery Agent";
+  lastLogin?: Date;
   lastLoginIP?: string;
 }
 
