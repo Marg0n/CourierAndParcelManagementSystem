@@ -1,4 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,9 +8,10 @@ import { useEffect, useState } from "react";
 import type { TUser } from "@/utils/types";
 import { server } from "@/utils/envUtility";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
-import { Loader2, User, Mail, Phone, MapPin, Globe, CalendarIcon, Shield, BadgeCheck } from "lucide-react";
+import { Loader2, User, Mail, Phone, MapPin, Globe, CalendarIcon, Shield, BadgeCheck, Lock, Database } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const UserProfile = () => {
 
@@ -128,170 +130,230 @@ const UserProfile = () => {
     );
   }
 
+  const InfoRow = ({
+    icon: Icon,
+    label,
+    value,
+  }: {
+    icon: any;
+    label: string;
+    value?: string;
+  }) => (
+    <div className="flex items-center gap-3 text-gray-700">
+      <Icon className="w-5 h-5 text-sky-600" />
+      <span className="font-semibold">{label}:</span>
+      <span>{value || "Not provided"}</span>
+    </div>
+  );
+  
   return (
     <>
-      <Card className="max-w-3xl mx-auto mt-8 shadow-xl rounded-2xl border border-sky-100">
-        <CardContent className="p-6 space-y-6">
-          <div className="flex items-center gap-3 mb-4">
+      <Card className="max-w-4xl mx-auto mt-8 shadow-xl rounded-2xl border border-sky-100">
+        <CardHeader>
+          <div className="flex items-center gap-3">
             <User className="w-8 h-8 text-sky-600" />
-            <h2 className="text-3xl font-bold text-sky-800">My Profile</h2>
+            <CardTitle className="text-3xl font-bold text-sky-800">
+              My Profile
+            </CardTitle>
           </div>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue="personal" className="w-full">
+            {/* Tab Lists */}
+            <TabsList className="grid grid-cols-3 w-full mb-6">
+              <TabsTrigger value="personal">Personal Info</TabsTrigger>
+              <TabsTrigger value="account">Account Settings</TabsTrigger>
+              <TabsTrigger value="system">Security & System</TabsTrigger>
+            </TabsList>
 
-          {!isEditing ? (
-            <div className="space-y-4 text-gray-700">
-              <p className="flex items-center gap-2">
-                <Mail className="w-5 h-5 text-sky-500" />
-                <span className="font-semibold">Email:</span> {profile?.email}
-              </p>
-              <p className="flex items-center gap-2">
-                <Phone className="w-5 h-5 text-emerald-500" />
-                <span className="font-semibold">Phone:</span> {profile?.phone || "Not provided"}
-              </p>
-              <p className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-amber-500" />
-                <span className="font-semibold">Address:</span>{" "}
-                {profile?.address || "Not provided"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-indigo-500" />
-                <span className="font-semibold">Country:</span>{" "}
-                {profile?.country || "Not provided"}
-              </p>
-              <p className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-purple-500" />
-                <span className="font-semibold">Role:</span>
-                <Badge variant="outline" className="ml-2">
-                  {profile?.role}
-                </Badge>
-              </p>
-              <p className="flex items-center gap-2">
-                <BadgeCheck className="w-5 h-5 text-green-600" />
-                <span className="font-semibold">Status:</span>
-                <Badge className={profile?.status === "active" ? "bg-green-500" : "bg-red-500"}>
-                  {profile?.status || "inactive"}
-                </Badge>
-              </p>
-
-              <Button onClick={() => setIsEditing(true)} className="mt-4">
-                Edit Profile
-              </Button>
-            </div>
-          ) : (
-            <form className="space-y-5">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input id="name" name="name" value={formData.name || ""} onChange={handleChange} />
-              </div>
-
-              <div>
-                <Label>Email</Label>
-                <Input value={formData.email || ""} disabled />
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" name="phone" value={formData.phone || ""} onChange={handleChange} />
-              </div>
-
-              <div>
-                <Label>Role</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, role: val as TUser["role"] }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Customer">Customer</SelectItem>
-                    <SelectItem value="Delivery Agent">Delivery Agent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, status: val as "active" | "inactive" }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Gender</Label>
-                <Select
-                  value={formData.gender}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, gender: val as "male" | "female" }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label>Date of Birth</Label>
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-sky-600" />
+            {/* PERSONAL INFO */}
+            <TabsContent value="personal" className="space-y-5">
+              {!isEditing ? (
+                <div className="space-y-4">
+                  <InfoRow icon={User} label="Name" value={profile?.name} />
+                  <InfoRow icon={Mail} label="Email" value={profile?.email} />
+                  <InfoRow icon={Phone} label="Phone" value={profile?.phone} />
+                  <InfoRow
+                    icon={CalendarIcon}
+                    label="Date of Birth"
+                    value={
+                      profile?.dateOfBirth
+                        ? new Date(profile.dateOfBirth).toLocaleDateString()
+                        : ""
+                    }
+                  />
+                  <InfoRow
+                    icon={MapPin}
+                    label="Address"
+                    value={`${profile?.address || ""}, ${profile?.city || ""}, ${
+                      profile?.country || ""
+                    }`}
+                  />
+                  <InfoRow
+                    icon={Shield}
+                    label="Blood Group"
+                    value={profile?.bloodGroup}
+                  />
+                  <InfoRow
+                    icon={BadgeCheck}
+                    label="Emergency Contact"
+                    value={profile?.emergencyContact}
+                  />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <Label>Name</Label>
+                  <Input
+                    name="name"
+                    value={formData.name || ""}
+                    onChange={handleChange}
+                  />
+                  <Label>Phone</Label>
+                  <Input
+                    name="phone"
+                    value={formData.phone || ""}
+                    onChange={handleChange}
+                  />
+                  <Label>Date of Birth</Label>
                   <Input
                     type="date"
                     name="dateOfBirth"
-                    value={formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString().split("T")[0] : ""}
+                    value={
+                      formData.dateOfBirth
+                        ? new Date(formData.dateOfBirth)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    onChange={handleChange}
+                  />
+                  <Label>Address</Label>
+                  <Input
+                    name="address"
+                    value={formData.address || ""}
+                    onChange={handleChange}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      name="city"
+                      placeholder="City"
+                      value={formData.city || ""}
+                      onChange={handleChange}
+                    />
+                    <Input
+                      name="country"
+                      placeholder="Country"
+                      value={formData.country || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <Label>Blood Group</Label>
+                  <Input
+                    name="bloodGroup"
+                    value={formData.bloodGroup || ""}
+                    onChange={handleChange}
+                  />
+                  <Label>Emergency Contact</Label>
+                  <Input
+                    name="emergencyContact"
+                    value={formData.emergencyContact || ""}
                     onChange={handleChange}
                   />
                 </div>
-              </div>
+              )}
+            </TabsContent>
 
-              {/* Address fields */}
-              <div>
-                <Label>Address</Label>
-                <Input name="address" value={formData.address || ""} onChange={handleChange} />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>City</Label>
-                  <Input name="city" value={formData.city || ""} onChange={handleChange} />
+            {/* ACCOUNT SETTINGS */}
+            <TabsContent value="account" className="space-y-5">
+              {!isEditing ? (
+                <div className="space-y-4">
+                  <InfoRow icon={Shield} label="Role" value={profile?.role} />
+                  <InfoRow
+                    icon={Badge}
+                    label="Status"
+                    value={profile?.status || "inactive"}
+                  />
                 </div>
-                <div>
-                  <Label>State</Label>
-                  <Input name="state" value={formData.state || ""} onChange={handleChange} />
+              ) : (
+                <div className="space-y-4">
+                  <Label>Role</Label>
+                  <Input
+                    name="role"
+                    value={formData.role || ""}
+                    onChange={handleChange}
+                  />
+                  <Label>Status</Label>
+                  <Input
+                    name="status"
+                    value={formData.status || ""}
+                    onChange={handleChange}
+                  />
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Country</Label>
-                  <Input name="country" value={formData.country || ""} onChange={handleChange} />
-                </div>
-                <div>
-                  <Label>Zip Code</Label>
-                  <Input name="zipCode" value={formData.zipCode || ""} onChange={handleChange} />
-                </div>
-              </div>
+              )}
+            </TabsContent>
 
-              <div className="flex gap-2">
-                <Button type="button" onClick={handleSave} disabled={saving} className="flex items-center gap-2">
+            {/* SECURITY & SYSTEM */}
+            <TabsContent value="system" className="space-y-5">
+              <InfoRow
+                icon={Lock}
+                label="Password Last Changed"
+                value={
+                  profile?.passwordChangedAt
+                    ? new Date(profile.passwordChangedAt).toLocaleDateString()
+                    : "Not set"
+                }
+              />
+              <InfoRow
+                icon={Database}
+                label="Created At"
+                value={
+                  profile?.createdAt
+                    ? new Date(profile.createdAt).toLocaleDateString()
+                    : "N/A"
+                }
+              />
+              <InfoRow
+                icon={BadgeCheck}
+                label="Last Login"
+                value={
+                  profile?.lastLogin
+                    ? new Date(profile.lastLogin).toLocaleString()
+                    : "Never"
+                }
+              />
+              <InfoRow
+                icon={Globe}
+                label="Last Login IP"
+                value={profile?.lastLoginIP}
+              />
+            </TabsContent>
+          </Tabs>
+
+          {/* ACTIONS */}
+          <div className="flex gap-2 mt-6">
+            {isEditing ? (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex items-center gap-2"
+                >
                   {saving && <Loader2 className="animate-spin w-4 h-4" />}
                   Save
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsEditing(false)}
+                >
                   Cancel
                 </Button>
-              </div>
-            </form>
-          )}
+              </>
+            ) : (
+              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
+            )}
+          </div>
         </CardContent>
       </Card>
 
