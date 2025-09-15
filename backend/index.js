@@ -406,6 +406,35 @@ async function run() {
             }
         });
 
+        //* ==================================
+        //* Update User Details (Upsert)
+        //* ==================================
+
+        app.post("/update-user/:email", verifyToken, async (req, res) => {
+            try {
+                const email = req?.params?.email;
+                const request = req.body;
+                const query = { email: email};
+                const option = { upsert: true };
+
+                //? Set data
+                const data = {
+                    $set:{
+                        ...request,
+                    }
+                }
+
+                //? Upsert the data
+                const result = await usersCollection.updateOne(query, data, option); 
+                
+                res.send(result);
+            } 
+            catch (err) {
+                console.error("Error updating data:", err);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
         //* ===================================
         //* Get Parcel by ID (for detail view)
         //* ===================================
