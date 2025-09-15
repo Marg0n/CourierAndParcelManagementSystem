@@ -2,7 +2,6 @@
 
 //* User type definition
 export interface TUser {
-    data: {
       _id: string;
       name: string;
       email: string;
@@ -26,5 +25,4 @@ export interface TUser {
       isDeleted?: boolean;
       lastLogin?: Date;
       lastLoginIP?: string;
-    };
   }

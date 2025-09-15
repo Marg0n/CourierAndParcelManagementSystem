@@ -410,7 +410,7 @@ async function run() {
         //* Update User Details (Upsert)
         //* ==================================
 
-        app.post("/update-user/:email", verifyToken, async (req, res) => {
+        app.put("/update-user/:email", verifyToken, async (req, res) => {
             try {
                 const email = req?.params?.email;
                 const request = req.body;
