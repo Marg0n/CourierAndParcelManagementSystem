@@ -88,6 +88,10 @@ const UserProfile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleSelectChange = (value: string, field: keyof TUser ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
   //* Save changes
   const handleSave = async () => {
     try{
@@ -134,20 +138,31 @@ const UserProfile = () => {
     icon: Icon,
     label,
     value,
+    badge,
   }: {
     icon: any;
     label: string;
     value?: string;
+    badge?: boolean;
   }) => (
     <div className="flex items-center gap-3 text-gray-700">
       <Icon className="w-5 h-5 text-sky-600" />
       <span className="font-semibold">{label}:</span>
-      <span>{value || "Not provided"}</span>
+      {badge ? (
+        <Badge
+          // variant={value === "active" ? "default" : "secondary"}
+          className={`ml-2 ${profile?.status === "active" ? "bg-green-700" : "bg-red-700"}`}
+        >
+          {value || "Not provided"}
+        </Badge>
+      ) : (
+        <span>{value || "Not provided"}</span>
+      )}
     </div>
   );
   
   return (
-    <>
+    <div className="max-h-full overflow-y-auto">
       <Card className="max-w-4xl mx-auto mt-8 shadow-xl rounded-2xl border border-sky-100">
         <CardHeader>
           <div className="flex items-center gap-3">
@@ -248,11 +263,23 @@ const UserProfile = () => {
                     />
                   </div>
                   <Label>Blood Group</Label>
-                  <Input
-                    name="bloodGroup"
+                  <Select
+                    onValueChange={(val) => handleSelectChange(val, "bloodGroup")}
                     value={formData.bloodGroup || ""}
-                    onChange={handleChange}
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Blood Group" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map(
+                        (bg) => (
+                          <SelectItem key={bg} value={bg}>
+                            {bg}
+                          </SelectItem>
+                        )
+                      )}
+                    </SelectContent>
+                  </Select>
                   <Label>Emergency Contact</Label>
                   <Input
                     name="emergencyContact"
@@ -269,25 +296,44 @@ const UserProfile = () => {
                 <div className="space-y-4">
                   <InfoRow icon={Shield} label="Role" value={profile?.role} />
                   <InfoRow
-                    icon={Badge}
+                    icon={BadgeCheck}
                     label="Status"
                     value={profile?.status || "inactive"}
+                    badge
                   />
                 </div>
               ) : (
                 <div className="space-y-4">
                   <Label>Role</Label>
-                  <Input
-                    name="role"
+                  <Select
+                    onValueChange={(val) => handleSelectChange(val, "role")}
                     value={formData.role || ""}
-                    onChange={handleChange}
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Admin">Admin</SelectItem>
+                      <SelectItem value="Customer">Customer</SelectItem>
+                      <SelectItem value="Delivery Agent">
+                        Delivery Agent
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+
                   <Label>Status</Label>
-                  <Input
-                    name="status"
+                  <Select
+                    onValueChange={(val) => handleSelectChange(val, "status")}
                     value={formData.status || ""}
-                    onChange={handleChange}
-                  />
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </TabsContent>
@@ -380,7 +426,7 @@ const UserProfile = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
