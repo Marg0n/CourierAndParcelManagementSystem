@@ -8,13 +8,30 @@ import { useEffect, useState } from "react";
 import type { TUser } from "@/utils/types";
 import { server } from "@/utils/envUtility";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
-import { Loader2, User, Mail, Phone, MapPin, Globe, CalendarIcon, Shield, BadgeCheck, Lock, Database } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Loader2,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  CalendarIcon,
+  Shield,
+  BadgeCheck,
+  Lock,
+  Database,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const UserProfile = () => {
-
   //* State data from store
   const { user, accessToken } = useAuthStore();
 
@@ -25,36 +42,36 @@ const UserProfile = () => {
   const [saving, setSaving] = useState<boolean>(false);
 
   //* Get user data from server
-  useEffect(()=>{
+  useEffect(() => {
     const fetchProfile = async () => {
-      try{
+      try {
         setLoading(true);
 
         const res = await fetch(
-          `${server}/get-user`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`
+            `${server}/get-user`, 
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
             }
-          }
-        );
+          );
 
         const data = await res.json();
         console.log("Fetch response:", data);
 
         //? Normalize result
         setProfile(data || user);
-      }
-      catch(err){
+      } 
+      catch (err) {
         console.error("Error fetching user: ", err);
-      }
-      finally{
+      } 
+      finally {
         setLoading(false);
       }
-    }
+    };
 
     if (user?.email) fetchProfile();
-  }, [user, accessToken])
+  }, [user, accessToken]);
 
   //* Local state for editable fields
   const [formData, setFormData] = useState<Partial<TUser>>({
@@ -81,28 +98,27 @@ const UserProfile = () => {
     lastLoginIP: user?.lastLoginIP || "",
   });
 
-
   //* Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (value: string, field: keyof TUser ) => {
+  const handleSelectChange = (value: string, field: keyof TUser) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   //* Save changes
   const handleSave = async () => {
-    try{
+    try {
       setSaving(false);
 
       const res = await fetch(
-        `${server}/update-user/${user?.email}`,
+        `${server}/update-user/${user?.email}`, 
         {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(formData),
         }
@@ -112,15 +128,13 @@ const UserProfile = () => {
       console.log("Update response:", data);
 
       //? Update user data
-      setProfile(
-        (prev => (
-          prev ? { ...prev, ...(formData as Partial<TUser>) } : null
-        ))
+      setProfile((prev) =>
+        prev ? { ...prev, ...(formData as Partial<TUser>) } : null
       );
-    }
-    catch(err){
+    } 
+    catch (err) {
       console.error("Error saving profile:", err);
-    }
+    } 
     finally {
       setSaving(false);
       setIsEditing(false);
@@ -129,9 +143,7 @@ const UserProfile = () => {
 
   //* Loading state
   if (loading) {
-    return (
-      <LoadingPage/>
-    );
+    return <LoadingPage />;
   }
 
   const InfoRow = ({
@@ -151,7 +163,9 @@ const UserProfile = () => {
       {badge ? (
         <Badge
           // variant={value === "active" ? "default" : "secondary"}
-          className={`ml-2 ${profile?.status === "active" ? "bg-green-700" : "bg-red-700"}`}
+          className={`ml-2 ${
+            profile?.status === "active" ? "bg-green-700" : "bg-red-700"
+          }`}
         >
           {value || "Not provided"}
         </Badge>
@@ -160,7 +174,7 @@ const UserProfile = () => {
       )}
     </div>
   );
-  
+
   return (
     <div className="max-h-full overflow-y-auto">
       <Card className="max-w-4xl mx-auto mt-8 shadow-xl rounded-2xl border border-sky-100">
@@ -200,9 +214,9 @@ const UserProfile = () => {
                   <InfoRow
                     icon={MapPin}
                     label="Address"
-                    value={`${profile?.address || ""}, ${profile?.city || ""}, ${
-                      profile?.country || ""
-                    }`}
+                    value={`${profile?.address || ""}, ${
+                      profile?.city || ""
+                    }, ${profile?.country || ""}`}
                   />
                   <InfoRow
                     icon={Shield}
@@ -264,7 +278,9 @@ const UserProfile = () => {
                   </div>
                   <Label>Blood Group</Label>
                   <Select
-                    onValueChange={(val) => handleSelectChange(val, "bloodGroup")}
+                    onValueChange={(val) =>
+                      handleSelectChange(val, "bloodGroup")
+                    }
                     value={formData.bloodGroup || ""}
                   >
                     <SelectTrigger>
@@ -288,11 +304,124 @@ const UserProfile = () => {
                   />
                 </div>
               )}
+
+              {/* Actions only for personal info */}
+              <div className="flex gap-2 mt-6">
+                {isEditing ? (
+                  <>
+                    <Button
+                      type="button"
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="flex items-center gap-2"
+                    >
+                      {saving && <Loader2 className="animate-spin w-4 h-4" />}
+                      Save
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                ) : (
+                  <Button onClick={() => setIsEditing(true)}>
+                    Edit Profile
+                  </Button>
+                )}
+              </div>
             </TabsContent>
 
             {/* ACCOUNT SETTINGS */}
             <TabsContent value="account" className="space-y-5">
-              {!isEditing ? (
+              {user?.role === "Admin" ? (
+                <>
+                  {/* Admin can edit */}
+                  {!isEditing ? (
+                    <div className="space-y-4">
+                      <InfoRow
+                        icon={Shield}
+                        label="Role"
+                        value={profile?.role}
+                      />
+                      <InfoRow
+                        icon={BadgeCheck}
+                        label="Status"
+                        value={profile?.status || "inactive"}
+                        badge
+                      />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <Label>Role</Label>
+                      <Select
+                        onValueChange={(val) => handleSelectChange(val, "role")}
+                        value={formData.role || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Admin">Admin</SelectItem>
+                          <SelectItem value="Customer">Customer</SelectItem>
+                          <SelectItem value="Delivery Agent">
+                            Delivery Agent
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Label>Status</Label>
+                      <Select
+                        onValueChange={(val) =>
+                          handleSelectChange(val, "status")
+                        }
+                        value={formData.status || ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  {/* Actions only for Admin */}
+                  <div className="flex gap-2 mt-6">
+                    {isEditing ? (
+                      <>
+                        <Button
+                          type="button"
+                          onClick={handleSave}
+                          disabled={saving}
+                          className="flex items-center gap-2"
+                        >
+                          {saving && (
+                            <Loader2 className="animate-spin w-4 h-4" />
+                          )}
+                          Save
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setIsEditing(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button onClick={() => setIsEditing(true)}>
+                        Edit Account
+                      </Button>
+                    )}
+                  </div>
+                </>
+              ) : (
+                //* Non-admins just view
                 <div className="space-y-4">
                   <InfoRow icon={Shield} label="Role" value={profile?.role} />
                   <InfoRow
@@ -302,43 +431,10 @@ const UserProfile = () => {
                     badge
                   />
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <Label>Role</Label>
-                  <Select
-                    onValueChange={(val) => handleSelectChange(val, "role")}
-                    value={formData.role || ""}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Admin">Admin</SelectItem>
-                      <SelectItem value="Customer">Customer</SelectItem>
-                      <SelectItem value="Delivery Agent">
-                        Delivery Agent
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Label>Status</Label>
-                  <Select
-                    onValueChange={(val) => handleSelectChange(val, "status")}
-                    value={formData.status || ""}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               )}
             </TabsContent>
 
-            {/* SECURITY & SYSTEM */}
+            {/* SECURITY & SYSTEM - always view only */}
             <TabsContent value="system" className="space-y-5">
               <InfoRow
                 icon={Lock}
@@ -376,30 +472,7 @@ const UserProfile = () => {
           </Tabs>
 
           {/* ACTIONS */}
-          <div className="flex gap-2 mt-6">
-            {isEditing ? (
-              <>
-                <Button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="flex items-center gap-2"
-                >
-                  {saving && <Loader2 className="animate-spin w-4 h-4" />}
-                  Save
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsEditing(false)}
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button onClick={() => setIsEditing(true)}>Edit Profile</Button>
-            )}
-          </div>
+          
         </CardContent>
       </Card>
 
