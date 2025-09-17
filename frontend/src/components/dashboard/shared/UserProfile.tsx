@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProfileBanner from "./ProfileBanner";
 
 const UserProfile = () => {
   //* State data from store
@@ -127,6 +128,7 @@ const UserProfile = () => {
 
       const data = await res.json();
       console.log("Update response:", data);
+      console.log("Update response:", formData);
 
       //? Update user data
       setProfile((prev) =>
@@ -147,6 +149,7 @@ const UserProfile = () => {
     return <LoadingPage />;
   }
 
+  //* Info UI settings
   const InfoRow = ({
     icon: Icon,
     label,
@@ -179,14 +182,36 @@ const UserProfile = () => {
   return (
     <div className="max-h-full overflow-y-auto">
       <Card className="max-w-4xl mx-auto mt-8 shadow-xl rounded-2xl border border-sky-100">
+        {/* Avatar + Banner */}
         <CardHeader>
-          <div className="flex items-center gap-3">
-            <User className="w-8 h-8 text-sky-600" />
-            <CardTitle className="text-3xl font-bold text-sky-800">
-              My Profile
-            </CardTitle>
-          </div>
+          <ProfileBanner
+          profile={profile}
+          onBannerChange={(e: any) => {
+            const file = e.target.files[0];
+            if (file) {
+              const url = URL.createObjectURL(file);
+              setFormData({ ...formData, avatarBg: url });
+            }
+          }}
+          onAvatarChange={(e: any) => {
+            const file = e.target.files[0];
+            if (file) {
+              const url = URL.createObjectURL(file);
+              setFormData({ ...formData, avatarUrl: url });
+            }
+          }}
+        />
+        </CardHeader>        
+
+        {/* User Name */}
+        <CardHeader className="md:mt-0 mt-12 text-center">
+          <CardTitle className="text-3xl font-bold text-sky-800">
+            {profile?.name}
+          </CardTitle>
+          <p className="text-gray-500">{profile?.email}</p>
         </CardHeader>
+
+        {/* Card Content */}
         <CardContent>
           <Tabs defaultValue="personal" className="w-full">
             {/* Tab Lists */}

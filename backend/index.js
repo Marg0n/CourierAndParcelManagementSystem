@@ -413,7 +413,7 @@ async function run() {
         app.put("/update-user/:email", verifyToken, async (req, res) => {
             try {
                 const email = req?.params?.email;
-                const request = req.body;
+                const request = req?.body;
                 const query = { email: email};
                 const option = { upsert: true };
 
@@ -426,7 +426,7 @@ async function run() {
 
                 //? Upsert the data
                 const result = await usersCollection.updateOne(query, data, option); 
-                
+                console.log(query, data, option,result,request)
                 res.send(result);
             } 
             catch (err) {
