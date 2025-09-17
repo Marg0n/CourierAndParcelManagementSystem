@@ -433,7 +433,7 @@ async function run() {
 
                 //? Upsert the data
                 const result = await usersCollection.updateOne(query, data, option); 
-                console.log(query, data, option,result,request)
+                
                 res.send(result);
             } 
             catch (err) {

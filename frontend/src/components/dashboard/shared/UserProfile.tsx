@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileBanner from "./ProfileBanner";
 import { toast } from "sonner";
+import { formatDate } from "@/utils/formatDate";
 
 const UserProfile = () => {
   //* State data from store
@@ -248,7 +249,7 @@ const UserProfile = () => {
                     label="Date of Birth"
                     value={
                       profile?.dateOfBirth
-                        ? new Date(profile.dateOfBirth).toLocaleDateString()
+                        ? formatDate(profile.dateOfBirth)
                         : ""
                     }
                   />
@@ -482,7 +483,7 @@ const UserProfile = () => {
                 label="Password Last Changed"
                 value={
                   profile?.passwordChangedAt
-                    ? new Date(profile.passwordChangedAt).toLocaleDateString()
+                    ? formatDate(profile.passwordChangedAt)
                     : "Not set"
                 }
               />
@@ -491,7 +492,8 @@ const UserProfile = () => {
                 label="Created At"
                 value={
                   profile?.createdAt
-                    ? new Date(profile.createdAt).toLocaleDateString()
+                    // ? new Date(profile.createdAt).toLocaleDateString()
+                    ? formatDate(profile.createdAt)
                     : "N/A"
                 }
               />
@@ -500,7 +502,7 @@ const UserProfile = () => {
                 label="Last Login"
                 value={
                   profile?.lastLogin
-                    ? new Date(profile.lastLogin).toLocaleString()
+                    ? formatDate(profile.lastLogin)
                     : "Never"
                 }
               />
