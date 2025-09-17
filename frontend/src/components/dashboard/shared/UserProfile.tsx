@@ -33,6 +33,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileBanner from "./ProfileBanner";
 import { toast } from "sonner";
 import { formatDate } from "@/utils/formatDate";
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { format } from "date-fns"
 
 const UserProfile = () => {
   //* State data from store
@@ -60,7 +63,7 @@ const UserProfile = () => {
           );
 
         const data = await res.json();
-        console.log("Fetch response:", data);
+        // console.log("Fetch response:", data);
 
         //? Normalize result
         setProfile(data || user);
@@ -117,6 +120,14 @@ const UserProfile = () => {
     try {
       setSaving(false);
 
+      //? formate data
+      const payload = {
+        ...formData,
+        dateOfBirth: formData.dateOfBirth
+          ? formData.dateOfBirth.toISOString() //? convert to ISO string
+          : undefined,
+      };
+
       const res = await fetch(
         `${server}/update-user/${user?.email}`, 
         {
@@ -125,7 +136,7 @@ const UserProfile = () => {
             "Content-Type": "application/json", 
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -286,7 +297,7 @@ const UserProfile = () => {
                     onChange={handleChange}
                   />
                   <Label>Date of Birth</Label>
-                  <Input
+                  {/* <Input
                     type="date"
                     name="dateOfBirth"
                     value={
@@ -297,7 +308,36 @@ const UserProfile = () => {
                         : ""
                     }
                     onChange={handleChange}
-                  />
+                  /> */}
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal"
+                      >
+                        {formData.dateOfBirth
+                          ? format(new Date(formData.dateOfBirth), "dd MMM yyyy") //? format Date directly
+                          : "Pick a date"}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        mode="single"
+                        captionLayout="dropdown"
+                        selected={
+                          formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined
+                        }
+                        onSelect={(date) =>
+                          setFormData({
+                            ...formData,
+                            dateOfBirth: date ?? undefined, //? keep Date in state
+                          })
+                        }
+                        autoFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <Label>Address</Label>
                   <Input
                     name="address"
