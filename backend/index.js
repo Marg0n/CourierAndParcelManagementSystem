@@ -204,7 +204,14 @@ async function run() {
         app.post("/registration", async (req, res) => {
             try {
                 const newUser = req?.body;
-                newUser.role = "Customer";
+                newUser.role = "Customer";  //? default role
+                newUser.status = "active"; //? mark user active by default
+                newUser.needsPasswordChange = false; //? no forced password reset initially
+                newUser.createdAt = new Date(); //? registration timestamp
+                newUser.updatedAt = new Date(); //? last update timestamp
+                newUser.isDeleted = false; //? mark as active account
+                newUser.lastLogin = null; //? will be updated at login
+                newUser.lastLoginIP = null; //? will be updated at login
 
                 //? check if the user exit
                 const existingUser = await usersCollection.findOne({ email: newUser?.email });

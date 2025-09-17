@@ -31,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileBanner from "./ProfileBanner";
+import { toast } from "sonner";
 
 const UserProfile = () => {
   //* State data from store
@@ -120,6 +121,7 @@ const UserProfile = () => {
         {
           method: "PUT",
           headers: {
+            "Content-Type": "application/json", 
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify(formData),
@@ -127,15 +129,28 @@ const UserProfile = () => {
       );
 
       const data = await res.json();
-      console.log("Update response:", data);
-      console.log("Update response:", formData);
 
-      //? Update user data
-      setProfile((prev) =>
-        prev ? { ...prev, ...(formData as Partial<TUser>) } : null
-      );
+      if (res.ok) {
+        //? success toast
+        toast.success("Profile Updated 🎉",{
+          description: "Your changes were saved successfully.",
+        });
+  
+        //? Update local state of user data
+        setProfile((prev) =>
+          prev ? { ...prev, ...(data as Partial<TUser>) } : null
+        );
+      }
+      else{
+        toast.error("Update Failed",{
+          description: data.message || "Something went wrong. Please try again.",
+        });
+      }
     } 
     catch (err) {
+      toast("Network Error",{
+        description: "Could not connect to the server. Try again later.",
+      });
       console.error("Error saving profile:", err);
     } 
     finally {
