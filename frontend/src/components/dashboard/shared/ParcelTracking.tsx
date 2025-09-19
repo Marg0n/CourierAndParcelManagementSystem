@@ -81,6 +81,7 @@ export const ParcelTracking = () => {
 
   if (loading) return <LoadingPage />;
   
+  //* No available parcel
   if (!parcel) return (
     <>
       <div className="flex flex-col justify-center items-center-safe text-red-500 h-full">
