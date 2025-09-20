@@ -14,7 +14,7 @@ import {
         <div className="w-full h-48 bg-sky-100 rounded-t-2xl overflow-hidden relative">
           {/* {profile?.avatarBg ? ( */}
             <img
-              src={profile.avatarBg || standInBg}
+              src={profile?.avatarBg || standInBg}
               alt="Banner"
               className="w-full h-full object-cover"
             />
