@@ -287,13 +287,13 @@ const UserProfile = () => {
                   <Label>Name</Label>
                   <Input
                     name="name"
-                    value={formData.name || ""}
+                    value={formData.name || profile?.name}
                     onChange={handleChange}
                   />
                   <Label>Phone</Label>
                   <Input
                     name="phone"
-                    value={formData.phone || ""}
+                    value={formData.phone || profile?.phone}
                     onChange={handleChange}
                   />
                   <Label>Date of Birth</Label>
@@ -315,9 +315,13 @@ const UserProfile = () => {
                         variant="outline"
                         className="w-full justify-start text-left font-normal"
                       >
-                        {formData.dateOfBirth
-                          ? format(new Date(formData.dateOfBirth), "dd MMM yyyy") //? format Date directly
-                          : "Pick a date"}
+                        {
+                          formData.dateOfBirth
+                            ? format(new Date(formData.dateOfBirth), "dd MMM yyyy") //? format Date directly
+                            : (
+                              profile?.dateOfBirth ? format(new Date(profile?.dateOfBirth), "dd MMM yyyy") : "Pick a date"
+                            )
+                        }
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -341,20 +345,20 @@ const UserProfile = () => {
                   <Label>Address</Label>
                   <Input
                     name="address"
-                    value={formData.address || ""}
+                    value={formData.address || profile?.address}
                     onChange={handleChange}
                   />
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       name="city"
                       placeholder="City"
-                      value={formData.city || ""}
+                      value={formData.city || profile?.city}
                       onChange={handleChange}
                     />
                     <Input
                       name="country"
                       placeholder="Country"
-                      value={formData.country || ""}
+                      value={formData.country || profile?.country}
                       onChange={handleChange}
                     />
                   </div>
@@ -363,7 +367,7 @@ const UserProfile = () => {
                     onValueChange={(val) =>
                       handleSelectChange(val, "bloodGroup")
                     }
-                    value={formData.bloodGroup || ""}
+                    value={formData.bloodGroup || profile?.bloodGroup}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Blood Group" />
@@ -381,7 +385,7 @@ const UserProfile = () => {
                   <Label>Emergency Contact</Label>
                   <Input
                     name="emergencyContact"
-                    value={formData.emergencyContact || ""}
+                    value={formData.emergencyContact || profile?.emergencyContact}
                     onChange={handleChange}
                   />
                 </div>
