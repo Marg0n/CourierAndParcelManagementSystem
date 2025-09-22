@@ -23,5 +23,6 @@ export interface TUser {
   zipCode?: string;
   isDeleted?: boolean;
   lastLogin?: Date;
+  lastUpdated?: Date;
   lastLoginIP?: string;
 }

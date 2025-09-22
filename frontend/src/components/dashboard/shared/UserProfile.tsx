@@ -20,6 +20,10 @@ import {
   BadgeCheck,
   Lock,
   Database,
+  DatabaseBackup,
+  Rss,
+  Droplets,
+  PhoneCall,
 } from "lucide-react";
 import {
   Select,
@@ -100,11 +104,42 @@ const UserProfile = () => {
     bloodGroup: profile?.bloodGroup || "",
     emergencyContact: profile?.emergencyContact || "",
     gender: profile?.gender || undefined,
-    dateOfBirth: profile?.dateOfBirth || undefined,
+    dateOfBirth: profile?.dateOfBirth ? new Date(profile.dateOfBirth) : undefined,
     lastLogin: user?.lastLogin || undefined,
+    lastUpdated: user?.lastUpdated || undefined,
     lastLoginIP: user?.lastLoginIP || "",
   });
 
+  //* Sync formData with updated profile
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        email: profile.email || "",
+        role: profile.role || "Customer",
+        phone: profile.phone || "",
+        address: profile.address || "",
+        city: profile.city || "",
+        state: profile.state || "",
+        country: profile.country || "",
+        zipCode: profile.zipCode || "",
+        status: profile.status || "active",
+        needsPasswordChange: profile.needsPasswordChange ?? false,
+        passwordChangedAt: profile.passwordChangedAt || undefined,
+        createdAt: profile.createdAt || undefined,
+        updatedAt: profile.updatedAt || undefined,
+        avatarUrl: profile.avatarUrl || "",
+        avatarBg: profile.avatarBg || "",
+        bloodGroup: profile.bloodGroup || "",
+        emergencyContact: profile.emergencyContact || "",
+        gender: profile.gender || undefined,
+        dateOfBirth: profile.dateOfBirth || undefined,
+        lastLogin: profile.lastLogin || undefined,
+        lastLoginIP: profile.lastLoginIP || "",
+      });
+    }
+  }, [profile]);
+  
   //* Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -124,10 +159,11 @@ const UserProfile = () => {
       const payload = {
         ...formData,
         dateOfBirth: formData.dateOfBirth
-          ? formData.dateOfBirth.toISOString() //? convert to ISO string
+          ? formData.dateOfBirth //? in Date formate
           : undefined,
       };
 
+      //? Update value
       const res = await fetch(
         `${server}/update-user/${user?.email}`, 
         {
@@ -141,17 +177,25 @@ const UserProfile = () => {
       );
 
       const data = await res.json();
+      console.log(data)
 
       if (res.ok) {
         //? success toast
         toast.success("Profile Updated 🎉",{
           description: "Your changes were saved successfully.",
         });
+
+        //? Re-fetch profile to get updated data
+        const updatedRes = await fetch(`${server}/get-user`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        const updatedProfile = await updatedRes.json();
   
         //? Update local state of user data
-        setProfile((prev) =>
-          prev ? { ...prev, ...(data as Partial<TUser>) } : null
-        );
+        setProfile(updatedProfile);
       }
       else{
         toast.error("Update Failed",{
@@ -272,12 +316,12 @@ const UserProfile = () => {
                     }, ${profile?.country || ""}`}
                   />
                   <InfoRow
-                    icon={Shield}
+                    icon={Droplets}
                     label="Blood Group"
                     value={profile?.bloodGroup}
                   />
                   <InfoRow
-                    icon={BadgeCheck}
+                    icon={PhoneCall}
                     label="Emergency Contact"
                     value={profile?.emergencyContact}
                   />
@@ -338,6 +382,7 @@ const UserProfile = () => {
                             dateOfBirth: date ?? undefined, //? keep Date in state
                           })
                         }
+                        disabled={(date) => date > new Date()} //? disables future dates
                         autoFocus
                       />
                     </PopoverContent>
@@ -527,7 +572,7 @@ const UserProfile = () => {
                 label="Password Last Changed"
                 value={
                   profile?.passwordChangedAt
-                    ? formatDate(profile.passwordChangedAt)
+                    ? formatDate(profile?.passwordChangedAt)
                     : "Not set"
                 }
               />
@@ -537,16 +582,26 @@ const UserProfile = () => {
                 value={
                   profile?.createdAt
                     // ? new Date(profile.createdAt).toLocaleDateString()
-                    ? formatDate(profile.createdAt)
+                    ? formatDate(profile?.createdAt)
                     : "N/A"
                 }
               />
               <InfoRow
-                icon={BadgeCheck}
+                icon={DatabaseBackup}
+                label="Last Updated At"
+                value={
+                  profile?.lastUpdated
+                    // ? new Date(profile.createdAt).toLocaleDateString()
+                    ? formatDate(profile?.lastUpdated)
+                    : "N/A"
+                }
+              />
+              <InfoRow
+                icon={Rss}
                 label="Last Login"
                 value={
                   profile?.lastLogin
-                    ? formatDate(profile.lastLogin)
+                    ? formatDate(profile?.lastLogin)
                     : "Never"
                 }
               />

@@ -324,6 +324,7 @@ async function run() {
                         email: user.email,
                         role: user.role,
                         lastLogin: updatedUser.lastLogin || "",      
+                        lastUpdated: updatedUser.lastUpdated || "",      
                         lastLoginIP: updatedUser.lastLoginIP || ""  
                     }
                 });
@@ -421,6 +422,8 @@ async function run() {
             try {
                 const email = req?.params?.email;
                 const request = req?.body;
+                const dob = req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : undefined;
+                const lastLogin = req.body.lastLogin ? new Date(req.body.lastLogin) : undefined;
                 const query = { email: email};
                 const option = { upsert: true };
 
@@ -428,6 +431,9 @@ async function run() {
                 const data = {
                     $set:{
                         ...request,
+                        dateOfBirth: new Date(dob),
+                        lastLogin: new Date(lastLogin), 
+                        lastUpdated: new Date(),
                     }
                 }
 

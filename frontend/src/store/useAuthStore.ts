@@ -8,6 +8,7 @@ interface User {
   email: string;
   role: "Admin" | "Customer" | "Delivery Agent";
   lastLogin?: Date;
+  lastUpdated?: Date;
   lastLoginIP?: string;
 }
 
