@@ -277,9 +277,9 @@ const UserProfile = () => {
         {/* User Name */}
         <CardHeader className="md:mt-0 mt-12 text-center">
           <CardTitle className="text-3xl font-bold text-sky-800">
-            {profile?.name}
+            {profile?.name || "John Smith"}
           </CardTitle>
-          <p className="text-gray-500">{profile?.email}</p>
+          <p className="text-gray-500">{profile?.email || "john.smith@mail.com"}</p>
         </CardHeader>
 
         {/* Card Content */}

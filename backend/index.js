@@ -16,6 +16,7 @@ import PDFDocument from "pdfkit";
 import stream from "stream";
 import fs from "fs";
 import path from "path";
+import multer from "multer";
 
 
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -24,6 +25,9 @@ import path from "path";
 
 const app = express();
 const port = process.env.PORT || 4000;
+//? for image upload
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 
 //* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -323,9 +327,9 @@ async function run() {
                         name: user.name,
                         email: user.email,
                         role: user.role,
-                        lastLogin: updatedUser.lastLogin || "",      
-                        lastUpdated: updatedUser.lastUpdated || "",      
-                        lastLoginIP: updatedUser.lastLoginIP || ""  
+                        lastLogin: updatedUser.lastLogin || "",
+                        lastUpdated: updatedUser.lastUpdated || "",
+                        lastLoginIP: updatedUser.lastLoginIP || ""
                     }
                 });
 
@@ -339,23 +343,23 @@ async function run() {
         //* Refresh Token to Access Token
         //* ==================================
 
-        app.post("/refresh", (req, res)=> {
+        app.post("/refresh", (req, res) => {
 
-            try{
+            try {
 
                 const { refreshToken } = req.body;
-    
-                if(!refreshToken) return res.status(401).json({ message: "Unauthorized: Refresh token is missing!"});
-    
+
+                if (!refreshToken) return res.status(401).json({ message: "Unauthorized: Refresh token is missing!" });
+
                 //* Prevents 
                 // if(!refreshToken.includes(refreshToken)) {
                 //     return res.status(403).json({ message: "Forbidden: Refresh token is invalid or expired." });
                 // }
-    
+
                 jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (error, decode) => {
-    
+
                     if (error) return res.status(403).json({ message: "Invalid RT." });
-    
+
                     const { id, email, role } = decode;
 
                     // Optional: check if the user still exists
@@ -370,7 +374,7 @@ async function run() {
                         email,
                         role
                     };
-    
+
                     //* Generate new access token
                     const newAccessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
                         expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "30d"
@@ -388,7 +392,7 @@ async function run() {
                     });
                 })
             }
-            catch(err){
+            catch (err) {
                 console.error("Refresh token error:", err);
                 res.status(500).json({ message: "Internal server error", error: err?.message });
             }
@@ -424,26 +428,86 @@ async function run() {
                 const request = req?.body;
                 const dob = req.body.dateOfBirth ? new Date(req.body.dateOfBirth) : undefined;
                 const lastLogin = req.body.lastLogin ? new Date(req.body.lastLogin) : undefined;
-                const query = { email: email};
+                const query = { email: email };
                 const option = { upsert: true };
 
                 //? Set data
                 const data = {
-                    $set:{
+                    $set: {
                         ...request,
                         dateOfBirth: new Date(dob),
-                        lastLogin: new Date(lastLogin), 
+                        lastLogin: new Date(lastLogin),
                         lastUpdated: new Date(),
                     }
                 }
 
                 //? Upsert the data
-                const result = await usersCollection.updateOne(query, data, option); 
-                
+                const result = await usersCollection.updateOne(query, data, option);
+
                 res.send(result);
-            } 
+            }
             catch (err) {
                 console.error("Error updating data:", err);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
+        //* ===================================
+        //* Avatar upload API
+        //* ===================================
+
+        app.patch("/users/:id/avatar", verifyToken, upload.single("avatar"), async (req, res) => {
+            try {
+                const userId = req.params.id;
+
+                if (!req.file) {
+                    return res.status(400).json({ message: "No avatar uploaded" });
+                }
+
+                const avatarBuffer = req.file.buffer;
+
+                const result = await usersCollection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: { avatarUrl: avatarBuffer, lastUpdated: new Date() } }
+                );
+
+                res.status(200).json({
+                    message: "Avatar updated successfully",
+                    result
+                });
+            }
+            catch (err) {
+                console.error("Avatar upload error:", err);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
+        //* ===================================
+        //* Banner upload API
+        //* ===================================
+
+        app.patch("/users/:id/banner", verifyToken, upload.single("banner"), async (req, res) => {
+            try {
+                const userId = req.params.id;
+
+                if (!req.file) {
+                    return res.status(400).json({ message: "No banner uploaded" });
+                }
+
+                const bannerBuffer = req.file.buffer;
+
+                const result = await usersCollection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: { avatarBg: bannerBuffer, lastUpdated: new Date() } }
+                );
+
+                res.status(200).json({
+                    message: "Banner updated successfully",
+                    result
+                });
+            }
+            catch (err) {
+                console.error("Banner upload error:", err);
                 res.status(500).json({ message: "Internal server error" });
             }
         });
@@ -474,11 +538,11 @@ async function run() {
             try {
                 const { id } = req.params;
                 const { role, email } = req.decoded;
-            
+
                 if (!id) return res.status(400).json({ message: "Parcel ID is required" });
-            
+
                 let query = { _id: new ObjectId(id) };
-            
+
                 //* Role-based filtering
                 if (role === "Customer") {
                     query.email = email; //? Only their parcels
@@ -486,13 +550,13 @@ async function run() {
                     query.agentEmail = email; //? Only assigned parcels
                 }
                 //! Admin: Needs no additional filter
-            
+
                 const parcel = await parcelsCollection.findOne(query);
-            
+
                 if (!parcel) {
                     return res.status(404).json({ message: "Parcel not found or access denied" });
                 }
-            
+
                 //* Prepare base response
                 const response = {
                     id: parcel._id,
@@ -504,7 +568,7 @@ async function run() {
                     createdAt: parcel.createdAt,
                     deliveryDate: parcel.deliveryDate || null
                 };
-            
+
                 //* Add extra details if Admin
                 if (role === "Admin") {
                     response.parcelType = parcel.parcelType || null;
@@ -517,21 +581,21 @@ async function run() {
                     response.deliveryAddress = parcel.deliveryAddress || null;
                     response.barcode = parcel.barcode || null;
                 }
-            
+
                 res.status(200).json(response);
-            } 
+            }
             catch (err) {
                 console.error("Tracking error:", err);
                 res.status(500).json({ message: "Internal server error", error: err?.message });
             }
-        });        
+        });
 
         //* ===================================
         //* Create Parcel API (Customer only)
         //* ===================================
 
         app.post("/parcels", verifyToken, verifyCustomer, async (req, res) => {
-            try{
+            try {
                 const parcel = req.body;
                 parcel.status = "Pending";
                 parcel.createdAt = new Date();
@@ -724,7 +788,7 @@ async function run() {
         app.get("/agent/export-csv", verifyToken, verifyDeliveryAgent, async (req, res) => {
             try {
                 const agentEmail = req.decoded.email;
-        
+
                 //? Only parcels assigned to this delivery agent
                 const parcels = await parcelsCollection.find({ email: agentEmail }).toArray();
 
@@ -768,29 +832,29 @@ async function run() {
         app.get("/agent/export-pdf", verifyToken, verifyDeliveryAgent, async (req, res) => {
             try {
                 const agentEmail = req.decoded.email;
-        
+
                 //? Only parcels assigned to this delivery agent
                 const parcels = await parcelsCollection.find({ email: agentEmail }).toArray();
-        
+
                 if (!parcels.length) {
                     return res.status(404).send({ message: "No parcels assigned to you." });
                 }
-        
+
                 const doc = new PDFDocument({ margin: 40, size: "A4" });
                 const bufferStream = new stream.PassThrough();
                 res.setHeader("Content-Disposition", "attachment; filename=agent_parcels.pdf");
                 res.setHeader("Content-Type", "application/pdf");
                 doc.pipe(bufferStream);
                 bufferStream.pipe(res);
-        
+
                 //? Header
                 doc.fontSize(18).text(`Parcels Assigned to: ${agentEmail}`, { align: "center" });
                 doc.moveDown(2);
-        
+
                 //? === Table Header ===
                 const tableTop = 100;
                 const rowHeight = 25;
-        
+
                 const headers = [
                     "Customer",
                     "Contact",
@@ -803,10 +867,10 @@ async function run() {
                     "Status",
                     "Agent"
                 ];
-        
+
                 const columnWidths = [80, 70, 70, 70, 50, 40, 60, 40, 60];
                 let startX = 40;
-        
+
                 headers.forEach((header, i) => {
                     doc
                         .font("Helvetica-Bold")
@@ -816,10 +880,10 @@ async function run() {
                         .text(header, startX + 5, tableTop + 7, { width: columnWidths[i] - 10 });
                     startX += columnWidths[i];
                 });
-        
+
                 //? === Table Rows ===
                 let rowY = tableTop + rowHeight;
-        
+
                 parcels.forEach((p) => {
                     let x = 40;
                     const row = [
@@ -833,7 +897,7 @@ async function run() {
                         p.price?.toString() || "0",
                         p.status
                     ];
-        
+
                     row.forEach((cell, i) => {
                         doc
                             .font("Helvetica")
@@ -843,15 +907,15 @@ async function run() {
                             .text(cell, x + 3, rowY + 7, { width: columnWidths[i] - 6, ellipsis: true });
                         x += columnWidths[i];
                     });
-        
+
                     rowY += rowHeight;
-        
+
                     if (rowY > 750) {
                         doc.addPage();
                         rowY = 50;
                     }
                 });
-        
+
                 doc.end();
             } catch (err) {
                 console.error("PDF export error:", err);
