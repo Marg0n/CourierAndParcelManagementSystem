@@ -465,10 +465,16 @@ async function run() {
                 }
 
                 const avatarBuffer = req.file.buffer;
+                const avatarMimeType = req.file.mimetype;
 
                 const result = await usersCollection.updateOne(
                     { _id: new ObjectId(userId) },
-                    { $set: { avatarUrl: avatarBuffer, lastUpdated: new Date() } }
+                    { $set: { 
+                            avatarUrl: avatarBuffer,       //? buffer stored
+                            avatarMimeType: avatarMimeType,     //? store mimetype
+                            lastUpdated: new Date() 
+                        } 
+                    }
                 );
 
                 res.status(200).json({
@@ -495,10 +501,16 @@ async function run() {
                 }
 
                 const bannerBuffer = req.file.buffer;
+                const bannerBufferMimetype = req.file.mimetype;
 
                 const result = await usersCollection.updateOne(
                     { _id: new ObjectId(userId) },
-                    { $set: { avatarBg: bannerBuffer, lastUpdated: new Date() } }
+                    { $set: { 
+                            avatarBg: bannerBuffer, 
+                            avatarBgMimetype: bannerBufferMimetype, 
+                            lastUpdated: new Date() 
+                        } 
+                    }
                 );
 
                 res.status(200).json({
@@ -516,16 +528,20 @@ async function run() {
         //* Serve avatar
         //* ===================================
 
-        app.get("/users/:id/avatar", async (req, res) => {
+        app.get("/users/:id/avatar", verifyToken, async (req, res) => {
             try {
                 const userId = req.params.id;
-                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+                const user = await usersCollection.findOne(
+                    { _id: new ObjectId(userId) },
+                    { projection: { avatarUrl: 1, avatarMimeType: 1 } }
+                );
 
                 if (!user?.avatarUrl) {
                     return res.status(404).send("No avatar found");
                 }
 
-                res.set("Content-Type", "image/png"); // or detect type dynamically
+                res.set("Content-Type", user.avatarMimeType || "image/jpeg"); // or detect type dynamically
+                
                 res.send(user.avatarUrl.buffer);
             } catch (err) {
                 console.error("Avatar fetch error:", err);
@@ -537,16 +553,20 @@ async function run() {
         //* Serve banner
         //* ===================================
 
-        app.get("/users/:id/banner", async (req, res) => {
+        app.get("/users/:id/banner", verifyToken, async (req, res) => {
             try {
                 const userId = req.params.id;
-                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+                const user = await usersCollection.findOne(
+                    { _id: new ObjectId(userId) },
+                    { projection: { avatarBg: 1, bannerBufferMimetype: 1 } }
+                );
 
                 if (!user?.avatarBg) {
                     return res.status(404).send("No banner found");
                 }
 
-                res.set("Content-Type", "image/png");
+                res.set("Content-Type", user.bannerBufferMimetype || "image/jpeg");
+
                 res.send(user.avatarBg.buffer);
             } catch (err) {
                 console.error("Banner fetch error:", err);

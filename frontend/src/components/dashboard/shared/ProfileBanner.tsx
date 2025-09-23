@@ -7,9 +7,31 @@ import {
 import { Camera } from "lucide-react";
 import standInBg from "@/assets/images/road.jpg";
 import { server } from "@/utils/envUtility";
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
 
 function ProfileBanner({ profile, onBannerChange, onAvatarChange }: any) {
   const apiUrl = server;
+
+  //* State data from store
+  const { accessToken } = useAuthStore();
+
+  const a = async () => {
+    const res = await fetch(
+      `${apiUrl}/users/${profile?._id}/avatar?ts=${Date.now()}`, 
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+    
+    console.log(res)
+  }
+
+  useEffect(() => {
+    a();
+  }, []);
 
   return (
     <div className="relative w-full">

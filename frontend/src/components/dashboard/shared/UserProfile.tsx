@@ -223,10 +223,10 @@ const UserProfile = () => {
 
       const formData = new FormData();
       formData.append("avatar", e.target.files[0]);
-      await fetch(`${import.meta.env.VITE_API_URL}/users/${profile?._id}/avatar`, {
+      await fetch(`${server}/users/${profile?._id}/avatar`, {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
       }).then(() => {
@@ -243,10 +243,10 @@ const UserProfile = () => {
 
       const formData = new FormData();
       formData.append("banner", e.target.files[0]);
-      await fetch(`${import.meta.env.VITE_API_URL}/users/${profile?._id}/banner`, {
+      await fetch(`${server}/users/${profile?._id}/banner`, {
         method: "PATCH",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
       }).then(() => {
