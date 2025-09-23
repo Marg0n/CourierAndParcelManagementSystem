@@ -52,36 +52,37 @@ const UserProfile = () => {
   const [saving, setSaving] = useState<boolean>(false);
 
   //* Get user data from server
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch(
+          `${server}/get-user`, 
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+      const data = await res.json();
+      // console.log("Fetch response:", data);
+
+      //? Normalize result
+      setProfile(data || user);
+    } 
+    catch (err) {
+      console.error("Error fetching user: ", err);
+    } 
+    finally {
+      setLoading(false);
+    }
+  };
+
+  //* Load profile once when component mounts
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-
-        const res = await fetch(
-            `${server}/get-user`, 
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-
-        const data = await res.json();
-        // console.log("Fetch response:", data);
-
-        //? Normalize result
-        setProfile(data || user);
-      } 
-      catch (err) {
-        console.error("Error fetching user: ", err);
-      } 
-      finally {
-        setLoading(false);
-      }
-    };
-
     if (user?.email) fetchProfile();
-  }, [user, accessToken]);
+  }, [user]);
 
   //* Local state for editable fields
   const [formData, setFormData] = useState<Partial<TUser>>({
@@ -99,8 +100,8 @@ const UserProfile = () => {
     passwordChangedAt: profile?.passwordChangedAt || undefined,
     createdAt: profile?.createdAt || undefined,
     updatedAt: profile?.updatedAt || undefined,
-    avatarUrl: profile?.avatarUrl || "",
-    avatarBg: profile?.avatarBg || "",
+    avatarUrl: profile?.avatarUrl || undefined,
+    avatarBg: profile?.avatarBg || undefined,
     bloodGroup: profile?.bloodGroup || "",
     emergencyContact: profile?.emergencyContact || "",
     gender: profile?.gender || undefined,
@@ -128,8 +129,8 @@ const UserProfile = () => {
         passwordChangedAt: profile.passwordChangedAt || undefined,
         createdAt: profile.createdAt || undefined,
         updatedAt: profile.updatedAt || undefined,
-        avatarUrl: profile.avatarUrl || "",
-        avatarBg: profile.avatarBg || "",
+        avatarUrl: profile.avatarUrl || undefined,
+        avatarBg: profile.avatarBg || undefined,
         bloodGroup: profile.bloodGroup || "",
         emergencyContact: profile.emergencyContact || "",
         gender: profile.gender || undefined,
@@ -215,6 +216,46 @@ const UserProfile = () => {
     }
   };
 
+  //* Avatar change
+  const handleAvatar = async (e: any) => {
+    if (e.target.files?.[0]) {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("avatar", e.target.files[0]);
+      await fetch(`${import.meta.env.VITE_API_URL}/users/${profile?._id}/avatar`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: formData,
+      }).then(() => {
+        setLoading(false);
+        fetchProfile();
+      });  
+    }
+  };
+
+  //* Banner change
+  const handleBanner = async (e: any) => {
+    if (e.target.files?.[0]) {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("banner", e.target.files[0]);
+      await fetch(`${import.meta.env.VITE_API_URL}/users/${profile?._id}/banner`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: formData,
+      }).then(() => {
+        setLoading(false);
+        fetchProfile();
+      });
+    }
+  };
+
   //* Loading state
   if (loading) {
     return <LoadingPage />;
@@ -257,20 +298,8 @@ const UserProfile = () => {
         <CardHeader>
           <ProfileBanner
           profile={profile}
-          onBannerChange={(e: any) => {
-            const file = e.target.files[0];
-            if (file) {
-              const url = URL.createObjectURL(file);
-              setFormData({ ...formData, avatarBg: url });
-            }
-          }}
-          onAvatarChange={(e: any) => {
-            const file = e.target.files[0];
-            if (file) {
-              const url = URL.createObjectURL(file);
-              setFormData({ ...formData, avatarUrl: url });
-            }
-          }}
+          onBannerChange={handleBanner}
+          onAvatarChange={handleAvatar}
         />
         </CardHeader>        
 

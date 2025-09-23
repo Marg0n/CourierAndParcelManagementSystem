@@ -7,7 +7,7 @@ import cors from "cors"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv";
 dotenv.config();
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { MongoClient, ObjectId, ServerApiVersion } from "mongodb";
 import bcrypt from "bcryptjs";
 //? csv
 import { Parser } from "json2csv";
@@ -509,6 +509,48 @@ async function run() {
             catch (err) {
                 console.error("Banner upload error:", err);
                 res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
+        //* ===================================
+        //* Serve avatar
+        //* ===================================
+
+        app.get("/users/:id/avatar", async (req, res) => {
+            try {
+                const userId = req.params.id;
+                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+                if (!user?.avatarUrl) {
+                    return res.status(404).send("No avatar found");
+                }
+
+                res.set("Content-Type", "image/png"); // or detect type dynamically
+                res.send(user.avatarUrl.buffer);
+            } catch (err) {
+                console.error("Avatar fetch error:", err);
+                res.status(500).send("Internal server error");
+            }
+        });
+
+        //* ===================================
+        //* Serve banner
+        //* ===================================
+
+        app.get("/users/:id/banner", async (req, res) => {
+            try {
+                const userId = req.params.id;
+                const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+                if (!user?.avatarBg) {
+                    return res.status(404).send("No banner found");
+                }
+
+                res.set("Content-Type", "image/png");
+                res.send(user.avatarBg.buffer);
+            } catch (err) {
+                console.error("Banner fetch error:", err);
+                res.status(500).send("Internal server error");
             }
         });
 

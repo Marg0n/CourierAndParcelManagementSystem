@@ -6,23 +6,27 @@ import {
 } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import standInBg from "@/assets/images/road.jpg";
+import { server } from "@/utils/envUtility";
 
 function ProfileBanner({ profile, onBannerChange, onAvatarChange }: any) {
+  const apiUrl = server;
+
   return (
     <div className="relative w-full">
-      {/* Banner */}
+      {/* Banner Background */}
       <div className="w-full h-48 bg-sky-100 rounded-t-2xl overflow-hidden relative">
         <img
           src={
             profile?.avatarBg
-              ? `data:image/jpeg;base64,${profile.avatarBg}`
+              ? `${apiUrl}/users/${profile?._id}/banner?ts=${Date.now()}`
               : standInBg
           }
           alt="Banner"
           className="w-full h-full object-cover"
         />
+        {/* <img src={new URL(standInBg, import.meta.url).href} /> */}
 
-        {/* Banner Upload */}
+        {/* Banner Upload Button */}
         <label className="absolute top-3 right-3 cursor-pointer bg-white/70 hover:bg-white rounded-full p-2 shadow">
           <Camera className="w-5 h-5 text-sky-700" />
           <input
@@ -41,18 +45,17 @@ function ProfileBanner({ profile, onBannerChange, onAvatarChange }: any) {
             <AvatarImage
               src={
                 profile?.avatarUrl
-                  ? `data:image/jpeg;base64,${profile.avatarUrl}`
+                  ? `${apiUrl}/users/${profile?._id}/avatar?ts=${Date.now()}`
                   : undefined
               }
               alt={profile?.name}
             />
-            {/* If no image is available */}
             <AvatarFallback className="text-2xl font-bold bg-sky-200 text-sky-800">
-              {profile?.name?.charAt(0).toUpperCase() || "U"}
+              {profile?.name?.charAt(0) || "U"}
             </AvatarFallback>
           </Avatar>
 
-          {/* Avatar Upload */}
+          {/* Avatar Upload Button */}
           <label className="absolute bottom-2 right-2 cursor-pointer bg-white rounded-full p-2 shadow">
             <Camera className="w-4 h-4 text-sky-600" />
             <input
