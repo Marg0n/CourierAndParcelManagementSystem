@@ -9,8 +9,8 @@ export interface TUser {
   passwordChangedAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
-  avatarUrl?: Buffer;
-  avatarBg?: Buffer;
+  avatarUrl?: Buffer | string;
+  avatarBg?: Buffer | string;
   address?: string;
   phone?: string;
   bloodGroup?: string;

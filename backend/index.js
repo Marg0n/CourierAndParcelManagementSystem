@@ -406,7 +406,13 @@ async function run() {
             try {
                 const email = req.decoded.email;
 
-                const user = await usersCollection.findOne({ email }, { projection: { password: 0 } }); //! excluding password for privacy
+                const user = await usersCollection.findOne({ email }, { 
+                    projection: { 
+                        password: 0,
+                        avatarUrl: 0, 
+                        avatarBg: 0 
+                    } 
+                }); //! excluding password for privacy and avatarUrl & avatarBg
                 if (!user) {
                     return res.status(404).json({ message: "User not found" });
                 }

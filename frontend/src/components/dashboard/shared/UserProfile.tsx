@@ -178,7 +178,7 @@ const UserProfile = () => {
       );
 
       const data = await res.json();
-      console.log(data)
+      // console.log(data)
 
       if (res.ok) {
         //? success toast
@@ -219,7 +219,7 @@ const UserProfile = () => {
   //* Avatar change
   const handleAvatar = async (e: any) => {
     if (e.target.files?.[0]) {
-      setLoading(true);
+      // setLoading(true);
 
       const formData = new FormData();
       formData.append("avatar", e.target.files[0]);
@@ -230,7 +230,7 @@ const UserProfile = () => {
         },
         body: formData,
       }).then(() => {
-        setLoading(false);
+        // setLoading(false);
         fetchProfile();
       });  
     }
@@ -239,7 +239,7 @@ const UserProfile = () => {
   //* Banner change
   const handleBanner = async (e: any) => {
     if (e.target.files?.[0]) {
-      setLoading(true);
+      // setLoading(true);
 
       const formData = new FormData();
       formData.append("banner", e.target.files[0]);
@@ -250,7 +250,7 @@ const UserProfile = () => {
         },
         body: formData,
       }).then(() => {
-        setLoading(false);
+        // setLoading(false);
         fetchProfile();
       });
     }
@@ -297,7 +297,7 @@ const UserProfile = () => {
         {/* Avatar + Banner */}
         <CardHeader>
           <ProfileBanner
-          profile={profile}
+          profile={profile!}
           onBannerChange={handleBanner}
           onAvatarChange={handleAvatar}
         />
