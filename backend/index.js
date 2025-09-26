@@ -513,7 +513,7 @@ async function run() {
                     { _id: new ObjectId(userId) },
                     { $set: { 
                             avatarBg: bannerBuffer, 
-                            avatarBgMimetype: bannerBufferMimetype, 
+                            avatarBgMimeType: bannerBufferMimetype, 
                             lastUpdated: new Date() 
                         } 
                     }
@@ -564,14 +564,14 @@ async function run() {
                 const userId = req.params.id;
                 const user = await usersCollection.findOne(
                     { _id: new ObjectId(userId) },
-                    { projection: { avatarBg: 1, bannerBufferMimetype: 1 } }
+                    { projection: { avatarBg: 1, avatarBgMimeType : 1 } }
                 );
 
                 if (!user?.avatarBg) {
                     return res.status(404).send("No banner found");
                 }
 
-                res.set("Content-Type", user.bannerBufferMimetype || "image/jpeg");
+                res.set("Content-Type", user.avatarBgMimeType || "image/jpeg");
 
                 res.send(user.avatarBg.buffer);
             } catch (err) {

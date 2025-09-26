@@ -225,14 +225,14 @@ function ProfileBanner({
             </div>
           ) : (
             <img
-              src={
+              src={bannerDataUrl || standInBg
                 //? FIX/CLARIFICATION: Check if a custom banner exists AND if we successfully fetched its data
-                profile?.avatarBg && bannerDataUrl
-                  ? `${bannerDataUrl}`
-                  : standInBg
+                // profile?.avatarBg && bannerDataUrl
+                //   ? bannerDataUrl
+                //   : standInBg
               }
               alt={profile?.name ? `${profile.name}'s banner` : "User banner"}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-fill"
             />
           )
         }
