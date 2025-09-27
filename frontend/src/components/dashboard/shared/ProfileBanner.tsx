@@ -232,19 +232,19 @@ function ProfileBanner({
                 //   : standInBg
               }
               alt={profile?.name ? `${profile.name}'s banner` : "User banner"}
-              className="w-full h-full object-fill"
+              className="w-full h-full object-cover"
             />
           )
         }
-        {/* <img
-          src={
-            profile?.avatarBg
-              ? `${bannerDataUrl}`
-              : standInBg
-          }
-          alt={profile?.name ? `${profile.name}'s banner` : "User banner"}
-          className="w-full h-full object-cover"
-        /> */}
+        {/* {isLoadingBanner ? (
+            <div className="w-full h-full bg-gray-200 animate-pulse" />
+          ) : (
+            <img
+              src={bannerDataUrl || standInBg}  //🔥 always show either DB banner or fallback
+              alt={profile?.name ? `${profile.name}'s banner` : "User banner"}
+              className="w-full h-full object-cover"
+            />
+        )} */}
         {/* <img src={new URL(standInBg, import.meta.url).href} /> */}
 
         {/* Banner Upload Button */}
