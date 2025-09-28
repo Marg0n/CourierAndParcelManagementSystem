@@ -48,7 +48,8 @@ function ProfileBanner({
   //* Wrap Avatar fetch logic in useCallback for stability
   const fetchAvatar = useCallback(async () => {
     //? Added check for required data before fetching
-    if (!profile?._id) {
+    if (!profile?._id || !accessToken) {   //? guard: skip if no token
+      setAvatarDataUrl("");                //? fallback
       setIsLoadingAvatar(false);
       return;
     }
@@ -122,7 +123,8 @@ function ProfileBanner({
   //* Wrap Banner fetch logic in useCallback for stability
   const fetchBanner = useCallback(async () => {
     //? Added check for required data before fetching
-    if (!profile?._id) {
+    if (!profile?._id || !accessToken) {   //? guard: skip if no token
+      setBannerDataUrl("");                //? fallback
       setIsLoadingBanner(false);
       return;
     }
@@ -183,6 +185,16 @@ function ProfileBanner({
 
   //* Calling Avatar and Banner
   useEffect(() => {
+
+    //* only fetch when logged in
+    if (!accessToken) {
+      setAvatarDataUrl("");
+      setBannerDataUrl("");
+      setIsLoadingAvatar(false);
+      setIsLoadingBanner(false);
+      return;
+    }
+
     fetchAvatar();
     fetchBanner();
 
