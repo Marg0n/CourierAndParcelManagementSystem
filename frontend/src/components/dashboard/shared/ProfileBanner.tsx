@@ -208,7 +208,7 @@ function ProfileBanner({
     //? No cleanup needed for Base64 Data URL, simplifying the cleanup function
     //? The previous URL.revokeObjectURL logic is removed because it's only needed for Object URLs.
     return () => {};
-  }, [fetchAvatar, fetchBanner]);
+  }, [fetchAvatar, fetchBanner, accessToken]);
 
   //* Compute initials once
   const initials = profile?.name
