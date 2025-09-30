@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 import type { TUser } from "@/utils/types";
+import { blobToBase64 } from "@/utils/base64FromBlob";
 
 //* Define a proper interface for the profile prop for better type safety
 interface ProfileBannerProps {
@@ -15,20 +16,6 @@ interface ProfileBannerProps {
   onAvatarChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-//! HELPER FUNCTION: To convert Blob to Base64 Data URL (eliminates URL.revokeObjectURL cleanup)
-const blobToBase64 = (blob: Blob, mimeType: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      //? Split the result to get just the base64 part and prefix it correctly
-      resolve(
-        `data:${mimeType};base64,${reader.result?.toString().split(",")[1]}`,
-      );
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-};
 
 function ProfileBanner({
   profile,

@@ -5,6 +5,7 @@ import { server } from "@/utils/envUtility";
 import { useAuthStore } from "@/store/useAuthStore";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
 import type { TUser } from "@/utils/types";
+import { formatDateOnly } from "@/utils/formatDate";
 
 const AllUsers = () => {
   const { accessToken } = useAuthStore();
@@ -51,6 +52,7 @@ const AllUsers = () => {
             <p><strong>Email:</strong> {selectedUser.email}</p>
             <p><strong>Role:</strong> {selectedUser.role}</p>
             <p><strong>Status:</strong> {selectedUser.status}</p>
+            <p><strong>DoB:</strong> {formatDateOnly(selectedUser.dateOfBirth as Date)}</p>
             {/* You can add avatar or other fields here */}
             <button
               onClick={() => setSelectedUser(null)}

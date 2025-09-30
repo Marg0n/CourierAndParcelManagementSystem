@@ -36,7 +36,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileBanner from "./ProfileBanner";
 import { toast } from "sonner";
-import { formatDate } from "@/utils/formatDate";
+import { formatDate, formatDateOnly } from "@/utils/formatDate";
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { format } from "date-fns"
@@ -333,7 +333,7 @@ const UserProfile = () => {
                     label="Date of Birth"
                     value={
                       profile?.dateOfBirth
-                        ? formatDate(profile.dateOfBirth)
+                        ? formatDateOnly(profile.dateOfBirth)
                         : ""
                     }
                   />

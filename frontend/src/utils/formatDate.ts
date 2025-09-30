@@ -23,6 +23,25 @@ export function formatDate(dateInput: Date | string | number): string {
   }).format(date);
 }
 
+export function formatDateOnly(dateInput: Date | string | number): string {
+  if (!dateInput) return "";
+
+  const date = new Date(dateInput);
+
+  //? Use Intl.DateTimeFormat for consistent formatting
+  return new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short", //? "short" (e.g., "Sep"), "long" (e.g., "September"), "numeric" (e.g., "9")
+    year: "numeric",
+    // hour: "numeric",
+    // minute: "2-digit",
+    // second: "2-digit",
+    hour12: true, //? 12-hour format with AM/PM
+    // timeZoneName: "long",
+  }).format(date);
+}
+
 /**
    * Date Options:
 
