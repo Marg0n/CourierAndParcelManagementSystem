@@ -738,7 +738,15 @@ async function run() {
 
         app.get("/admin/users", verifyToken, verifyAdmin, async (req, res) => {
             try {
-                const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
+                const users = await usersCollection.find({}, { 
+                    projection: { 
+                        password: 0,
+                        // avatarBg: 0, 
+                        // avatarBgMimeType : 0,
+                        // avatarUrl: 0,
+                        // avatarMimeType : 0 
+                    } 
+                }).toArray();
                 res.send(users);
             } catch (err) {
                 console.error("Error fetching users:", err);
