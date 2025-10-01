@@ -35,7 +35,7 @@ const AllUsers = () => {
   if (loading) return <LoadingPage />;
 
   return (
-    <div className="max-h-full">
+    <div className="max-h-full overflow-y-auto">
       <h1 className="text-2xl font-bold">All Users Dashboard</h1>
       <p className="text-gray-600 mb-4">Manage users</p>
 
