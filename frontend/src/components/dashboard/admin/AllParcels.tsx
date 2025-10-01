@@ -2,14 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
+import type { Parcel } from "@/utils/types";
 
-//* Interface
-interface Parcel {
-  _id: string;
-  customerEmail: string;
-  status: string;
-  createdAt: string;
-}
 
 const AllParcels = () => {
 
@@ -56,6 +50,7 @@ const AllParcels = () => {
               <tr className="bg-gray-100 text-left">
                 <th className="px-4 py-2">ID</th>
                 <th className="px-4 py-2">Customer</th>
+                <th className="px-4 py-2">Agent</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2">Created</th>
                 <th className="px-4 py-2">Actions</th>
@@ -66,6 +61,7 @@ const AllParcels = () => {
                 <tr key={parcel._id} className="border-t">
                   <td className="px-4 py-2">{parcel._id}</td>
                   <td className="px-4 py-2">{parcel.customerEmail}</td>
+                  <td className="px-4 py-2">{parcel.agentEmail}</td>
                   <td className="px-4 py-2">{parcel.status}</td>
                   <td className="px-4 py-2">
                     {new Date(parcel.createdAt).toLocaleString()}

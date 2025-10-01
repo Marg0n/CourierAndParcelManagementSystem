@@ -1,17 +1,25 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, getPaginationRowModel, flexRender } from "@tanstack/react-table";
-import type { ColumnDef, SortingState, PaginationState } from "@tanstack/react-table";
-import { Eye, Edit3, Trash2 } from "lucide-react";
-import type { TUser } from "@/utils/types";
+import type { TableProps, TUser } from "@/utils/types";
+import type {
+  ColumnDef,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import {
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { Edit3, Eye, Trash2 } from "lucide-react";
+import React, { useMemo, useState } from "react";
 
-interface TableProps {
-  data: TUser[];
-  onView: (user: TUser) => void;
-}
 
-const Table: React.FC<TableProps> = ({ data, onView }) => {
+
+const Table: React.FC<TableProps> = ({ data, onView, onEdit, onDelete }) => {
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -42,18 +50,24 @@ const Table: React.FC<TableProps> = ({ data, onView }) => {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Edit3 className="text-blue-500 cursor-pointer" size={18} />
-            <Trash2 className="text-red-500 cursor-pointer" size={18} />
+            <Edit3 
+              className="text-blue-500 cursor-pointer" size={18}               
+              onClick={() => onEdit?.(row.original)}
+            />
+            <Trash2 
+              className="text-red-500 cursor-pointer" size={18} 
+              onClick={() => onDelete?.()}
+            />
             <Eye
               className="text-green-500 cursor-pointer"
               size={18}
-              onClick={() => onView(row.original)}
+              onClick={() => onView?.(row.original)}
             />
           </div>
         ),
       },
     ],
-    [onView]
+    [onView, onEdit, onDelete]
   );
 
   const table = useReactTable({
@@ -98,7 +112,10 @@ const Table: React.FC<TableProps> = ({ data, onView }) => {
                     className="p-3 text-left font-medium text-gray-700 cursor-pointer whitespace-nowrap"
                     onClick={header.column.getToggleSortingHandler()}
                   >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                     {{
                       asc: " 🔼",
                       desc: " 🔽",
@@ -111,7 +128,10 @@ const Table: React.FC<TableProps> = ({ data, onView }) => {
           <tbody>
             {table.getRowModel().rows.length === 0 && (
               <tr>
-                <td colSpan={columns.length} className="p-3 text-center text-gray-500">
+                <td
+                  colSpan={columns.length}
+                  className="p-3 text-center text-gray-500"
+                >
                   No data found
                 </td>
               </tr>

@@ -2,14 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
+import type { Parcel } from "@/utils/types";
 
-//* Interface
-interface Parcel {
-  _id: string;
-  customerEmail: string;
-  status: string;
-  createdAt: string;
-}
+
 
 const AssignedParcels = () => {
 

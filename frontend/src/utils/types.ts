@@ -26,3 +26,20 @@ export interface TUser {
   lastUpdated?: Date;
   lastLoginIP?: string;
 }
+
+//* Interface for booking/parcel
+export interface Parcel {
+  _id: string;
+  customerEmail: string;
+  agentEmail?: string;
+  status: string;
+  createdAt: string;
+}
+
+//* Props for Table component
+export interface TableProps {
+  data: TUser[];
+  onView?: (user: TUser) => void;
+  onEdit?: (user: TUser) => void;
+  onDelete?: () => void;
+}
