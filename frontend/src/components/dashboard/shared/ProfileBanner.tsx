@@ -6,15 +6,8 @@ import { server } from "@/utils/envUtility";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
-import type { TUser } from "@/utils/types";
+import type { ProfileBannerProps } from "@/utils/types";
 import { blobToBase64 } from "@/utils/base64FromBlob";
-
-//* Define a proper interface for the profile prop for better type safety
-interface ProfileBannerProps {
-  profile: TUser;
-  onBannerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onAvatarChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
 
 
 function ProfileBanner({

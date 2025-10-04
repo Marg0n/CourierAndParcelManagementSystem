@@ -43,3 +43,10 @@ export interface TableProps {
   onEdit?: (user: TUser) => void;
   onDelete?: () => void;
 }
+
+//* Define a proper interface for the profile prop for better type safety
+export interface ProfileBannerProps {
+  profile: TUser;
+  onBannerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAvatarChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
