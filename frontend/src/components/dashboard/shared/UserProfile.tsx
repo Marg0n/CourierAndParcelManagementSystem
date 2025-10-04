@@ -1,30 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InfoRow } from "@/components/ui/InfoRow";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useEffect, useState } from "react";
-import type { TUser } from "@/utils/types";
-import { server } from "@/utils/envUtility";
-import LoadingPage from "@/pages/shared/loading/LoadingPage";
 import {
-  Loader2,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Globe,
-  CalendarIcon,
-  Shield,
-  BadgeCheck,
-  Lock,
-  Database,
-  DatabaseBackup,
-  Rss,
-  Droplets,
-  PhoneCall,
-} from "lucide-react";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -32,18 +17,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProfileBanner from "./ProfileBanner";
-import { toast } from "sonner";
+import LoadingPage from "@/pages/shared/loading/LoadingPage";
+import { useAuthStore } from "@/store/useAuthStore";
+import { server } from "@/utils/envUtility";
 import { formatDate, formatDateOnly } from "@/utils/formatDate";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
+import type { TUser } from "@/utils/types";
 import { format } from "date-fns";
+import {
+  BadgeCheck,
+  CalendarIcon,
+  Database,
+  DatabaseBackup,
+  Droplets,
+  Globe,
+  Loader2,
+  Lock,
+  Mail,
+  MapPin,
+  Phone,
+  PhoneCall,
+  Rss,
+  Shield,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import ProfileBanner from "./ProfileBanner";
 
 const UserProfile = () => {
   //* State data from store
@@ -257,35 +257,6 @@ const UserProfile = () => {
     return <LoadingPage />;
   }
 
-  //* Info UI settings
-  const InfoRow = ({
-    icon: Icon,
-    label,
-    value,
-    badge,
-  }: {
-    icon: any;
-    label: string;
-    value?: string;
-    badge?: boolean;
-  }) => (
-    <div className="flex items-center gap-3 text-gray-700">
-      <Icon className="w-5 h-5 text-sky-600" />
-      <span className="font-semibold">{label}:</span>
-      {badge ? (
-        <Badge
-          // variant={value === "active" ? "default" : "secondary"}
-          className={`ml-2 ${
-            profile?.status === "active" ? "bg-green-700" : "bg-red-700"
-          }`}
-        >
-          {value || "Not provided"}
-        </Badge>
-      ) : (
-        <span>{value || "Not provided"}</span>
-      )}
-    </div>
-  );
 
   return (
     <div className="max-h-full overflow-y-auto">
@@ -323,10 +294,11 @@ const UserProfile = () => {
             <TabsContent value="personal" className="space-y-5">
               {!isEditing ? (
                 <div className="space-y-4">
-                  <InfoRow icon={User} label="Name" value={profile?.name} />
-                  <InfoRow icon={Mail} label="Email" value={profile?.email} />
-                  <InfoRow icon={Phone} label="Phone" value={profile?.phone} />
+                  <InfoRow user={profile!} icon={User} label="Name" value={profile?.name} />
+                  <InfoRow user={profile!} icon={Mail} label="Email" value={profile?.email} />
+                  <InfoRow user={profile!} icon={Phone} label="Phone" value={profile?.phone} />
                   <InfoRow
+                    user={profile!}
                     icon={CalendarIcon}
                     label="Date of Birth"
                     value={
@@ -337,6 +309,7 @@ const UserProfile = () => {
                   />
                   <InfoRow
                     icon={MapPin}
+                    user={profile!}
                     label="Address"
                     value={`${profile?.address || ""}, ${
                       profile?.city || ""
@@ -344,11 +317,13 @@ const UserProfile = () => {
                   />
                   <InfoRow
                     icon={Droplets}
+                    user={profile!}
                     label="Blood Group"
                     value={profile?.bloodGroup}
                   />
                   <InfoRow
                     icon={PhoneCall}
+                    user={profile!}
                     label="Emergency Contact"
                     value={profile?.emergencyContact}
                   />
@@ -509,11 +484,13 @@ const UserProfile = () => {
                     <div className="space-y-4">
                       <InfoRow
                         icon={Shield}
+                        user={profile!}
                         label="Role"
                         value={profile?.role}
                       />
                       <InfoRow
                         icon={BadgeCheck}
+                        user={profile!}
                         label="Status"
                         value={profile?.status || "inactive"}
                         badge
@@ -543,7 +520,7 @@ const UserProfile = () => {
                         onValueChange={(val) =>
                           handleSelectChange(val, "status")
                         }
-                        value={formData.status || ""}
+                        value={formData?.status || "Inactive"}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select Status" />
@@ -589,9 +566,10 @@ const UserProfile = () => {
               ) : (
                 //* Non-admins just view
                 <div className="space-y-4">
-                  <InfoRow icon={Shield} label="Role" value={profile?.role} />
+                  <InfoRow user={profile!} icon={Shield} label="Role" value={profile?.role} />
                   <InfoRow
                     icon={BadgeCheck}
+                    user={profile!}
                     label="Status"
                     value={profile?.status || "inactive"}
                     badge
@@ -604,6 +582,7 @@ const UserProfile = () => {
             <TabsContent value="system" className="space-y-5">
               <InfoRow
                 icon={Lock}
+                user={profile!}
                 label="Password Last Changed"
                 value={
                   profile?.passwordChangedAt
@@ -613,6 +592,7 @@ const UserProfile = () => {
               />
               <InfoRow
                 icon={Database}
+                user={profile!}
                 label="Created At"
                 value={
                   profile?.createdAt
@@ -623,6 +603,7 @@ const UserProfile = () => {
               />
               <InfoRow
                 icon={DatabaseBackup}
+                user={profile!}
                 label="Last Updated At"
                 value={
                   profile?.lastUpdated
@@ -633,6 +614,7 @@ const UserProfile = () => {
               />
               <InfoRow
                 icon={Rss}
+                user={profile!}
                 label="Last Login"
                 value={
                   profile?.lastLogin ? formatDate(profile?.lastLogin) : "Never"
@@ -640,6 +622,7 @@ const UserProfile = () => {
               />
               <InfoRow
                 icon={Globe}
+                user={profile!}
                 label="Last Login IP"
                 value={profile?.lastLoginIP}
               />
