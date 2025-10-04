@@ -37,9 +37,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProfileBanner from "./ProfileBanner";
 import { toast } from "sonner";
 import { formatDate, formatDateOnly } from "@/utils/formatDate";
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import { format } from "date-fns"
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
 
 const UserProfile = () => {
   //* State data from store
@@ -56,25 +60,20 @@ const UserProfile = () => {
     try {
       setLoading(true);
 
-      const res = await fetch(
-          `${server}/get-user`, 
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+      const res = await fetch(`${server}/get-user`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       const data = await res.json();
       // console.log("Fetch response:", data);
 
       //? Normalize result
       setProfile(data || user);
-    } 
-    catch (err) {
+    } catch (err) {
       console.error("Error fetching user: ", err);
-    } 
-    finally {
+    } finally {
       setLoading(false);
     }
   };
@@ -105,7 +104,9 @@ const UserProfile = () => {
     bloodGroup: profile?.bloodGroup || "",
     emergencyContact: profile?.emergencyContact || "",
     gender: profile?.gender || undefined,
-    dateOfBirth: profile?.dateOfBirth ? new Date(profile.dateOfBirth) : undefined,
+    dateOfBirth: profile?.dateOfBirth
+      ? new Date(profile.dateOfBirth)
+      : undefined,
     lastLogin: user?.lastLogin || undefined,
     lastUpdated: user?.lastUpdated || undefined,
     lastLoginIP: user?.lastLoginIP || "",
@@ -140,7 +141,7 @@ const UserProfile = () => {
       });
     }
   }, [profile]);
-  
+
   //* Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -165,24 +166,21 @@ const UserProfile = () => {
       };
 
       //? Update value
-      const res = await fetch(
-        `${server}/update-user/${user?.email}`, 
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json", 
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${server}/update-user/${user?.email}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
       // console.log(data)
 
       if (res.ok) {
         //? success toast
-        toast.success("Profile Updated 🎉",{
+        toast.success("Profile Updated 🎉", {
           description: "Your changes were saved successfully.",
         });
 
@@ -194,23 +192,21 @@ const UserProfile = () => {
         });
 
         const updatedProfile = await updatedRes.json();
-  
+
         //? Update local state of user data
         setProfile(updatedProfile);
-      }
-      else{
-        toast.error("Update Failed",{
-          description: data.message || "Something went wrong. Please try again.",
+      } else {
+        toast.error("Update Failed", {
+          description:
+            data.message || "Something went wrong. Please try again.",
         });
       }
-    } 
-    catch (err) {
-      toast("Network Error",{
+    } catch (err) {
+      toast("Network Error", {
         description: "Could not connect to the server. Try again later.",
       });
       console.error("Error saving profile:", err);
-    } 
-    finally {
+    } finally {
       setSaving(false);
       setIsEditing(false);
     }
@@ -232,7 +228,7 @@ const UserProfile = () => {
       }).then(() => {
         // setLoading(false);
         fetchProfile();
-      });  
+      });
     }
   };
 
@@ -297,18 +293,20 @@ const UserProfile = () => {
         {/* Avatar + Banner */}
         <CardHeader>
           <ProfileBanner
-          profile={profile!}
-          onBannerChange={handleBanner}
-          onAvatarChange={handleAvatar}
-        />
-        </CardHeader>        
+            profile={profile!}
+            onBannerChange={handleBanner}
+            onAvatarChange={handleAvatar}
+          />
+        </CardHeader>
 
         {/* User Name */}
         <CardHeader className="md:mt-0 mt-12 text-center">
           <CardTitle className="text-3xl font-bold text-sky-800">
             {profile?.name || "John Smith"}
           </CardTitle>
-          <p className="text-gray-500">{profile?.email || "john.smith@mail.com"}</p>
+          <p className="text-gray-500">
+            {profile?.email || "john.smith@mail.com"}
+          </p>
         </CardHeader>
 
         {/* Card Content */}
@@ -388,13 +386,17 @@ const UserProfile = () => {
                         variant="outline"
                         className="w-full justify-start text-left font-normal"
                       >
-                        {
-                          formData.dateOfBirth
-                            ? format(new Date(formData.dateOfBirth), "dd MMM yyyy") //? format Date directly
-                            : (
-                              profile?.dateOfBirth ? format(new Date(profile?.dateOfBirth), "dd MMM yyyy") : "Pick a date"
+                        {formData.dateOfBirth
+                          ? format(
+                              new Date(formData.dateOfBirth),
+                              "dd MMM yyyy"
+                            ) //? format Date directly
+                          : profile?.dateOfBirth
+                          ? format(
+                              new Date(profile?.dateOfBirth),
+                              "dd MMM yyyy"
                             )
-                        }
+                          : "Pick a date"}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </PopoverTrigger>
@@ -403,7 +405,9 @@ const UserProfile = () => {
                         mode="single"
                         captionLayout="dropdown"
                         selected={
-                          formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined
+                          formData.dateOfBirth
+                            ? new Date(formData.dateOfBirth)
+                            : undefined
                         }
                         onSelect={(date) =>
                           setFormData({
@@ -459,7 +463,9 @@ const UserProfile = () => {
                   <Label>Emergency Contact</Label>
                   <Input
                     name="emergencyContact"
-                    value={formData.emergencyContact || profile?.emergencyContact}
+                    value={
+                      formData.emergencyContact || profile?.emergencyContact
+                    }
                     onChange={handleChange}
                   />
                 </div>
@@ -610,8 +616,8 @@ const UserProfile = () => {
                 label="Created At"
                 value={
                   profile?.createdAt
-                    // ? new Date(profile.createdAt).toLocaleDateString()
-                    ? formatDate(profile?.createdAt)
+                    ? // ? new Date(profile.createdAt).toLocaleDateString()
+                      formatDate(profile?.createdAt)
                     : "N/A"
                 }
               />
@@ -620,8 +626,8 @@ const UserProfile = () => {
                 label="Last Updated At"
                 value={
                   profile?.lastUpdated
-                    // ? new Date(profile.createdAt).toLocaleDateString()
-                    ? formatDate(profile?.lastUpdated)
+                    ? // ? new Date(profile.createdAt).toLocaleDateString()
+                      formatDate(profile?.lastUpdated)
                     : "N/A"
                 }
               />
@@ -629,9 +635,7 @@ const UserProfile = () => {
                 icon={Rss}
                 label="Last Login"
                 value={
-                  profile?.lastLogin
-                    ? formatDate(profile?.lastLogin)
-                    : "Never"
+                  profile?.lastLogin ? formatDate(profile?.lastLogin) : "Never"
                 }
               />
               <InfoRow
@@ -643,7 +647,6 @@ const UserProfile = () => {
           </Tabs>
 
           {/* ACTIONS */}
-          
         </CardContent>
       </Card>
 

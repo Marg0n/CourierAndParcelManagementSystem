@@ -12,8 +12,8 @@ import { blobToBase64 } from "@/utils/base64FromBlob";
 //* Define a proper interface for the profile prop for better type safety
 interface ProfileBannerProps {
   profile: TUser;
-  onBannerChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onAvatarChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBannerChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAvatarChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 
@@ -247,15 +247,18 @@ function ProfileBanner({
         {/* <img src={new URL(standInBg, import.meta.url).href} /> */}
 
         {/* Banner Upload Button */}
-        <label className="absolute top-3 right-3 cursor-pointer bg-white/70 hover:bg-white rounded-full p-2 shadow">
-          <Camera className="w-5 h-5 text-sky-700" />
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={onBannerChange}
-          />
-        </label>
+        {
+          onBannerChange &&
+          <label className="absolute top-3 right-3 cursor-pointer bg-white/70 hover:bg-white rounded-full p-2 shadow">
+            <Camera className="w-5 h-5 text-sky-700" />
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={onBannerChange}
+            />
+          </label>
+        }
       </div>
 
       {/* Avatar */}
@@ -274,7 +277,7 @@ function ProfileBanner({
 
             {/* 🔥 Conditional rendering for loading state */}
             {isLoadingAvatar ? (
-              <AvatarFallback className="w-full h-full bg-gray-200 animate-pulse rounded-full">
+              <AvatarFallback className="w-full h-full bg-gray-200 animate-pulse rounded-full font-bold">
                 {initials}
               </AvatarFallback>
             ) : (
@@ -293,15 +296,18 @@ function ProfileBanner({
           </Avatar>
 
           {/* Avatar Upload Button */}
-          <label className="absolute bottom-2 right-2 cursor-pointer bg-white rounded-full p-2 shadow">
-            <Camera className="w-4 h-4 text-sky-600" />
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={onAvatarChange}
-            />
-          </label>
+          {
+            onAvatarChange &&
+            <label className="absolute bottom-2 right-2 cursor-pointer bg-white rounded-full p-2 shadow">
+              <Camera className="w-4 h-4 text-sky-600" />
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={onAvatarChange}
+              />
+            </label>
+          }
         </div>
       </div>
     </div>

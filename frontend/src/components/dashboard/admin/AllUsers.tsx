@@ -1,18 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react";
 import Table from "@/components/dashboard/shared/Table";
-import { server } from "@/utils/envUtility";
-import { useAuthStore } from "@/store/useAuthStore";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
-import type { TUser } from "@/utils/types";
+import { useAuthStore } from "@/store/useAuthStore";
+import { server } from "@/utils/envUtility";
 import { formatDateOnly } from "@/utils/formatDate";
+import type { TUser } from "@/utils/types";
+import { useEffect, useState } from "react";
+import ProfileBanner from "../shared/ProfileBanner";
+import { Badge } from "@/components/ui/badge";
+import { Bike, CircleUser, ShieldUser } from 'lucide-react';
+import clsx from "clsx";
 
 const AllUsers = () => {
   const { accessToken } = useAuthStore();
   const [users, setUsers] = useState<TUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
-  // const [avatarDataUrl, setAvatarDataUrl] = useState("");
 
   const fetchAllUsers = async () => {
     try {
@@ -21,7 +23,7 @@ const AllUsers = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await res.json();
-      console.log(data)
+      console.log(data);
       setUsers(data);
     } catch (err) {
       console.error("Error fetching users: ", err);
@@ -33,17 +35,6 @@ const AllUsers = () => {
   useEffect(() => {
     fetchAllUsers();
   }, []);
-
-  // //* Explicitly get the Content-Type
-  // const mimeType = res.headers.get("Content-Type") || "image/png";
-
-  // //* Get the response body as a Blob (binary data)
-  // const imageBlob = await res.blob();
-
-  // //* Convert Blob to Base64 Data URL
-  // const base64Url = await blobToBase64(imageBlob, mimeType);
-
-  // setAvatarDataUrl(base64Url);
 
   if (loading) return <LoadingPage />;
 
@@ -60,43 +51,71 @@ const AllUsers = () => {
       {selectedUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] h-[80vh] relative overflow-x-auto">
-            {/* <h2 className="text-xl font-bold mb-4">User Details</h2>
-            <p><strong>Name:</strong> {selectedUser.name}</p>
-            <p><strong>Email:</strong> {selectedUser.email}</p>
-            <p><strong>Role:</strong> {selectedUser.role}</p>
-            <p><strong>Status:</strong> {selectedUser.status}</p>
-            <p><strong>DoB:</strong> {formatDateOnly(selectedUser.dateOfBirth as Date)}</p> */}
-            {/* You can add avatar or other fields here */}
-            <div
-                className="w-full h-[150px] rounded-t-md relative bg-[url('https://img.freepik.com/premium-vector/content-writer-vector-colored-round-line-illustration_104589-2571.jpg')] bg-center">
-                <img
-                    src={"https://images.pexels.com/photos/3772623/pexels-photo-3772623.jpeg"}
-                    alt=""
-                    className="w-[80px] h-[80px] rounded-full border-secondary border-4 absolute -bottom-12 left-1/2 transform -translate-x-1/2 object-cover"
-                />
-            </div>
+            {/* Avatar or other fields here */}
+            <ProfileBanner profile={selectedUser!} />
 
             <div className="w-full text-center mt-16">
-                <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">{selectedUser.name}</h2>
-                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">{selectedUser.email}</p>
+              <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">
+                {selectedUser.name}
+              </h2>
+              <Badge 
+                variant="secondary"
+                className={clsx(
+                  selectedUser?.role === "Admin" && "bg-blue-500 dark:bg-blue-600",
+                  selectedUser?.role === "Delivery Agent" && "bg-pink-500 dark:bg-gray-600",
+                  selectedUser?.role === "Customer" && "bg-green-500 dark:bg-green-600",
+                  " text-white"
+                )}
+              >
+                {
+                  selectedUser?.role === "Admin" && <CircleUser />
+                }
+                {
+                  selectedUser?.role === "Delivery Agent" && <Bike />
+                }
+                {
+                  selectedUser?.role === "Customer" && <ShieldUser />
+                }
+                {selectedUser.role}
+              </Badge>
+              <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem] font-semibold italic">
+                {selectedUser.email}
+              </p>
             </div>
-            <div
-                className="w-full p-4 mt-8 border-t dark:border-slate-700 border-border flex items-center justify-between">
-                <div className="flex items-center justify-center flex-col">
-                    <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">Role</h2>
-                    <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">{selectedUser.role}</p>
-                </div>
 
-                <div className="flex items-center justify-center flex-col">
-                    <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">Status</h2>
-                    <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">{selectedUser.status}</p>
-                </div>
+            <div className="w-full p-4 mt-8 border-t dark:border-slate-700 border-border flex items-center justify-between">
+              <div className="flex items-center justify-center flex-col">
+                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                  Gender
+                </h2>
+                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                  {selectedUser.gender || "Not Provided"}
+                </p>
+              </div>
 
-                <div className="flex items-center justify-center flex-col">
-                    <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">DoB</h2>
-                    <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">{formatDateOnly(selectedUser.dateOfBirth as Date)}</p>
-                </div>
+              <div className="flex items-center justify-center flex-col">
+                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                  Status
+                </h2>
+                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                  {selectedUser.status || "Not Provided"}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-center flex-col">
+                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                  DoB
+                </h2>
+                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                  {formatDateOnly(selectedUser.dateOfBirth as Date) || "Not Provided"}
+                </p>
+              </div>
             </div>
+
+            <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
+              <h3 className="text-lg font-semibold text-center">Other Information</h3>
+            </div>
+
             <button
               onClick={() => setSelectedUser(null)}
               className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
