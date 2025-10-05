@@ -493,7 +493,7 @@ const UserProfile = () => {
                         user={profile!}
                         label="Status"
                         value={profile?.status || "inactive"}
-                        badge
+                        badge={true}
                       />
                     </div>
                   ) : (
@@ -572,7 +572,7 @@ const UserProfile = () => {
                     user={profile!}
                     label="Status"
                     value={profile?.status || "inactive"}
-                    badge
+                    badge={true}
                   />
                 </div>
               )}

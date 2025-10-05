@@ -4,7 +4,7 @@ export interface TUser {
   name: string;
   email: string;
   role: "Admin" | "Customer" | "Delivery Agent";
-  status?: "active" | "inactive";
+  status: "active" | "inactive";
   needsPasswordChange?: boolean;
   passwordChangedAt?: Date;
   createdAt?: Date;

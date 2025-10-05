@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { TUser } from "@/utils/types";
-import { Badge } from "lucide-react";
+import { Badge } from "./badge";
 
 //* Info UI settings
 export const InfoRow = ({
