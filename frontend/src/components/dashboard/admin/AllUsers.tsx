@@ -9,6 +9,7 @@ import ProfileBanner from "../shared/ProfileBanner";
 import { Badge } from "@/components/ui/badge";
 import { Bike, CircleUser, ShieldUser } from 'lucide-react';
 import clsx from "clsx";
+import UserInfo from "./UserInfo";
 
 const AllUsers = () => {
   const { accessToken } = useAuthStore();
@@ -97,7 +98,10 @@ const AllUsers = () => {
                 <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
                   Status
                 </h2>
-                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                <p className={clsx(
+                    "text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]",
+                    selectedUser.status === "active" ? "text-green-700" : "text-red-700"
+                  )}>
                   {selectedUser.status || "Not Provided"}
                 </p>
               </div>
@@ -114,6 +118,7 @@ const AllUsers = () => {
 
             <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
               <h3 className="text-lg font-semibold text-center">Other Information</h3>
+              <UserInfo profile={selectedUser!} />
             </div>
 
             <button

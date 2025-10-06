@@ -35,11 +35,14 @@ import {
   Lock,
   Mail,
   MapPin,
+  Mars,
   Phone,
   PhoneCall,
   Rss,
   Shield,
   User,
+  Venus,
+  VenusAndMars,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -306,6 +309,12 @@ const UserProfile = () => {
                         ? formatDateOnly(profile.dateOfBirth)
                         : ""
                     }
+                  />
+                  <InfoRow
+                    icon={profile?.gender === undefined ? VenusAndMars : (profile?.gender === "female" ? Venus : Mars )}
+                    user={profile!}
+                    label="Gender"
+                    value={profile?.gender || "Not provided"}
                   />
                   <InfoRow
                     icon={MapPin}
