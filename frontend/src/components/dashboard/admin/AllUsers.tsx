@@ -100,7 +100,8 @@ const AllUsers = () => {
                 </h2>
                 <p className={clsx(
                     "text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]",
-                    selectedUser.status === "active" ? "text-green-700" : "text-red-700"
+                    selectedUser.status === "active" && "text-green-700",
+                    selectedUser.status === "inactive" && "text-red-700",
                   )}>
                   {selectedUser.status || "Not Provided"}
                 </p>
