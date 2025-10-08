@@ -72,9 +72,12 @@ const UserInfo = ({ profile }: { profile: TUser }) => {
               icon={MapPin}
               user={profile!}
               label="Address"
-              value={`${profile?.address || ""}, ${profile?.city || ""}, ${
-                profile?.country || ""
-              }`}
+              value={`
+                ${profile?.address || ""}, 
+                ${profile?.city || ""} -  
+                ${profile?.zipCode || ""},
+                ${profile?.country || ""}
+              `}
             />
             <InfoRow
               icon={Droplets}

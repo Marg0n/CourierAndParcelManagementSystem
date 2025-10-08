@@ -320,9 +320,12 @@ const UserProfile = () => {
                     icon={MapPin}
                     user={profile!}
                     label="Address"
-                    value={`${profile?.address || ""}, ${
-                      profile?.city || ""
-                    }, ${profile?.country || ""}`}
+                    value={`
+                      ${profile?.address || ""}, 
+                      ${profile?.city || ""} - 
+                      ${profile?.zipCode || ""},
+                      ${profile?.country || ""}
+                    `}
                   />
                   <InfoRow
                     icon={Droplets}
@@ -404,6 +407,19 @@ const UserProfile = () => {
                       />
                     </PopoverContent>
                   </Popover>
+                  <Label>Gender</Label>
+                  <Select
+                    onValueChange={(val) => handleSelectChange(val, "gender")}
+                    value={formData.gender || profile?.gender}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>                      
+                    </SelectContent>
+                  </Select>
                   <Label>Address</Label>
                   <Input
                     name="address"
@@ -415,6 +431,12 @@ const UserProfile = () => {
                       name="city"
                       placeholder="City"
                       value={formData.city || profile?.city}
+                      onChange={handleChange}
+                    />
+                    <Input
+                      name="zipCode"
+                      placeholder="Zip Code"
+                      value={formData.zipCode || profile?.zipCode}
                       onChange={handleChange}
                     />
                     <Input
