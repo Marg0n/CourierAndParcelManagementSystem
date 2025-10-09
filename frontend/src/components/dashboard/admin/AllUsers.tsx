@@ -2,7 +2,6 @@ import Table from "@/components/dashboard/shared/Table";
 import LoadingPage from "@/pages/shared/loading/LoadingPage";
 import { useAuthStore } from "@/store/useAuthStore";
 import { server } from "@/utils/envUtility";
-import { formatDateOnly } from "@/utils/formatDate";
 import type { TUser } from "@/utils/types";
 import { useEffect, useState } from "react";
 import ProfileBanner from "../shared/ProfileBanner";
@@ -24,7 +23,7 @@ const AllUsers = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       setUsers(data);
     } catch (err) {
       console.error("Error fetching users: ", err);
@@ -55,6 +54,7 @@ const AllUsers = () => {
             {/* Avatar or other fields here */}
             <ProfileBanner profile={selectedUser!} />
 
+            {/* Name, Email & Role */}
             <div className="w-full text-center mt-16">
               <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">
                 {selectedUser.name}
@@ -84,13 +84,14 @@ const AllUsers = () => {
               </p>
             </div>
 
+            {/* Crucial Info */}
             <div className="w-full p-4 mt-8 border-t dark:border-slate-700 border-border flex items-center justify-between">
               <div className="flex items-center justify-center flex-col">
                 <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
-                  Gender
+                  Phone
                 </h2>
                 <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
-                  {selectedUser.gender || "Not Provided"}
+                  {selectedUser.phone || "Not Provided"}
                 </p>
               </div>
 
@@ -109,10 +110,10 @@ const AllUsers = () => {
 
               <div className="flex items-center justify-center flex-col">
                 <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
-                  DoB
+                  Emergency Contact
                 </h2>
                 <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
-                  {formatDateOnly(selectedUser.dateOfBirth as Date) || "Not Provided"}
+                  {selectedUser.emergencyContact || "Not Provided"}
                 </p>
               </div>
             </div>

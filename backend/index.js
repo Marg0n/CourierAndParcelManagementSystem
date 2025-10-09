@@ -459,7 +459,7 @@ async function run() {
         });
 
         //* ===================================
-        //* Avatar upload API
+        //* Avatar patch / upload API
         //* ===================================
 
         app.patch("/users/:id/avatar", verifyToken, upload.single("avatar"), async (req, res) => {
@@ -495,7 +495,7 @@ async function run() {
         });
 
         //* ===================================
-        //* Banner upload API
+        //* Banner patch / upload API
         //* ===================================
 
         app.patch("/users/:id/banner", verifyToken, upload.single("banner"), async (req, res) => {
@@ -692,10 +692,55 @@ async function run() {
         });
 
         //* ===================================
+        //* Users' data patch API (Admin)
+        //* ===================================
+
+        app.patch("/admin/users/:id", verifyToken, verifyAdmin, async (req, res) => {
+            try {
+                const userId = req.params.id;
+                const role = req.body.role; //? Reason for change
+                const status = req.body.status; //? Reason for change
+                const statusChangeReason = req.body.statusChangeReason; //? Reason for change
+                const statusChangedBy = req.body.statusChangedBy; //? email of the admin
+                
+                if (!statusChangeReason && !statusChangedBy) {
+                return res.status(400).json({ message: "No reason specified." });
+                }
+                
+                const result = await usersCollection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: { 
+                            role,
+                            status,
+                            statusUpdatedByAdmin: new Date(),
+                            statusChangeReason,
+                            statusChangedBy
+                        } 
+                    }
+                );
+
+                if (result.matchedCount === 0) {
+                    return res.status(404).json({ message: "User not found" });
+                  }
+
+                res.status(200).json({
+                    success: true,
+                    message: "Users' data updated successfully",
+                    modifiedCount: result.modifiedCount,
+                    result
+                });
+            }
+            catch (err) {
+                console.error("Patch error:", err);
+                res.status(500).json({ message: "Internal server error" });
+            }
+        });
+
+        //* ===================================
         //* Assign an Agent to Parcel (Admin)
         //* ===================================
 
-        app.put("/parcels/:id/assign", verifyToken, verifyAdmin, async (req, res) => {
+        app.put("/admin/parcels/:id/assign", verifyToken, verifyAdmin, async (req, res) => {
             try {
                 const { id } = req.params;
                 const { agentEmail } = req.body;
