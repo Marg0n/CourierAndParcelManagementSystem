@@ -25,6 +25,9 @@ export interface TUser {
   lastLogin?: Date;
   lastUpdated?: Date;
   lastLoginIP?: string;
+  statusChangeReason?: string;
+  statusUpdatedByAdmin?: Date,
+  statusChangedBy?: string;
 }
 
 //* Interface for booking/parcel
