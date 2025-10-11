@@ -52,6 +52,7 @@ import {
   VenusAndMars,
 } from "lucide-react";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
 const UserInfo = ({
@@ -69,6 +70,7 @@ const UserInfo = ({
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+
 
   const [formData, setFormData] = useState<Partial<TUser>>({
     name: user?.name || "",
@@ -98,6 +100,12 @@ const UserInfo = ({
     lastLoginIP: user?.lastLoginIP || "",
     statusChangeReason: "",
   });
+  
+  //* Get the current location/pathname
+  const location = useLocation();
+
+  //* Determine if we are on a dashboard route (admin, agent, customer)
+  const isDashboardRoute = location.pathname.startsWith("/dashboard/admin/users");
 
   //* Handle the changes
   const handleSelectChange = (val: string, field: keyof TUser) => {

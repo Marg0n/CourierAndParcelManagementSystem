@@ -11,11 +11,14 @@ import clsx from "clsx";
 import UserInfo from "./UserInfo";
 
 const AllUsers = () => {
+
+  //* States
   const { accessToken } = useAuthStore();
   const [users, setUsers] = useState<TUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
 
+  //* Fetch all Users
   const fetchAllUsers = async () => {
     try {
       setLoading(true);
