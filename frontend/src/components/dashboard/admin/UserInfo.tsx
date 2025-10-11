@@ -493,7 +493,7 @@ const UserInfo = ({
           )}
 
           {/* Actions only for personal info */}
-          {profile?.email === user?.email && (
+          {profile?.email === user?.email && !isDashboardRoute && (
             <div className="flex gap-2 mt-6">
               {isEditing ? (
                 <>
