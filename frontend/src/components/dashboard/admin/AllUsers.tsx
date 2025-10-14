@@ -26,7 +26,7 @@ const AllUsers = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await res.json();
-      console.log('data is called');
+      // console.log('data is called'); 
       setUsers(data);
     } catch (err) {
       console.error("Error fetching users: ", err);

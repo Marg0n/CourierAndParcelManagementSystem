@@ -159,7 +159,7 @@ const UserInfo = ({
       toast.error("Error updating user!");
     } finally {
       //? Called if fetchProfile is given
-      if (fetchProfile) toast.success("yey!"); //fetchProfile();
+      if (fetchProfile) await fetchProfile();
 
       setSaving(false);
     }
