@@ -58,11 +58,11 @@ import { toast } from "sonner";
 const UserInfo = ({
   profile,
   setProfile,
-}: // fetchProfile,
-{
+  fetchProfile,
+}: {
   profile: TUser;
   setProfile?: React.Dispatch<React.SetStateAction<TUser | null>>;
-  // fetchProfile?: () => Promise<void>;
+  fetchProfile?: () => Promise<void>;
 }) => {
   //* States & data from store
   const { user, accessToken } = useAuthStore();
@@ -71,11 +71,11 @@ const UserInfo = ({
   const [saving, setSaving] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
 
-
-  const [formData, setFormData] = useState<Partial<TUser>>({
-    name: user?.name || "",
-    email: user?.email || "",
-    role: user?.role || "Customer", // fallback
+  const [formData, setFormData] = useState<TUser>({
+    _id: profile?._id,
+    name: profile?.name || "",
+    email: profile?.email || "",
+    role: profile?.role || "Customer", // fallback
     phone: profile?.phone || "",
     address: profile?.address || "",
     city: profile?.city || "",
@@ -95,17 +95,21 @@ const UserInfo = ({
     dateOfBirth: profile?.dateOfBirth
       ? new Date(profile.dateOfBirth)
       : undefined,
-    lastLogin: user?.lastLogin || undefined,
-    lastUpdated: user?.lastUpdated || undefined,
-    lastLoginIP: user?.lastLoginIP || "",
-    statusChangeReason: "",
+    lastLogin: profile?.lastLogin || undefined,
+    lastUpdated: profile?.lastUpdated || undefined,
+    lastLoginIP: profile?.lastLoginIP || "",
+    statusChangeReason: "",    
+    statusUpdatedByAdmin: profile?.statusUpdatedByAdmin || undefined,
+    statusChangedBy: profile?.statusChangedBy || "",
   });
-  
+
   //* Get the current location/pathname
   const location = useLocation();
 
   //* Determine if we are on a dashboard route (admin, agent, customer)
-  const isDashboardRoute = location.pathname.startsWith("/dashboard/admin/users");
+  const isDashboardRoute = location.pathname.startsWith(
+    "/dashboard/admin/users"
+  );
 
   //* Handle the changes
   const handleSelectChange = (val: string, field: keyof TUser) => {
@@ -137,13 +141,16 @@ const UserInfo = ({
       const data = await res.json();
 
       if (data.success) {
+        //? Optimistically update local profile
+        // profile.role = formData.role as "Admin" | "Customer" | "Delivery Agent";
+        // profile.status = formData.status as "active" | "inactive";
+
+        if(setProfile)setProfile(formData!);
+
         toast.success("User updated successfully!");
+
         setIsEditing(false);
         setOpenConfirm(false);
-
-        //? Optimistically update local profile
-        profile.role = formData.role as "Admin" | "Customer" | "Delivery Agent";
-        profile.status = formData.status as "active" | "inactive";
       } else {
         toast.error(data.message || "Failed to update user ❌");
       }
@@ -151,6 +158,9 @@ const UserInfo = ({
       console.error(err);
       toast.error("Error updating user!");
     } finally {
+      //? Called if fetchProfile is given
+      if (fetchProfile) toast.success("yey!"); //fetchProfile();
+
       setSaving(false);
     }
   };
@@ -547,7 +557,7 @@ const UserInfo = ({
                   <Label>Role</Label>
                   <Select
                     onValueChange={(val) => handleSelectChange(val, "role")}
-                    value={formData.role || ""}
+                    value={formData.role || profile?.role}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select Role" />
@@ -713,6 +723,28 @@ const UserInfo = ({
             label="Last Login IP"
             value={profile?.lastLoginIP}
           />
+          {user?.role === "Admin" && isDashboardRoute && (
+            <>            
+              <InfoRow
+                icon={Globe}
+                user={profile!}
+                label="Status updated by"
+                value={profile?.statusChangedBy}
+              />
+              <InfoRow
+                icon={Globe}
+                user={profile!}
+                label="Status updated reason"
+                value={profile?.statusChangeReason}
+              />
+              <InfoRow
+                icon={Globe}
+                user={profile!}
+                label="Status updated on"
+                value={formatDate(profile?.statusUpdatedByAdmin as Date)}
+              />
+            </>
+          )}
         </TabsContent>
       </Tabs>
     </>

@@ -26,7 +26,7 @@ const AllUsers = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await res.json();
-      // console.log(data);
+      console.log('data is called');
       setUsers(data);
     } catch (err) {
       console.error("Error fetching users: ", err);
@@ -123,7 +123,7 @@ const AllUsers = () => {
 
             <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
               <h3 className="text-lg font-semibold text-center">Other Information</h3>
-              <UserInfo profile={selectedUser!} />
+              <UserInfo profile={selectedUser!} setProfile={setSelectedUser} fetchProfile={fetchAllUsers} />
             </div>
 
             <button
