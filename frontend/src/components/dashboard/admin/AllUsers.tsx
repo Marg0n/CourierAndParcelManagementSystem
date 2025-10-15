@@ -6,12 +6,11 @@ import type { TUser } from "@/utils/types";
 import { useEffect, useState } from "react";
 import ProfileBanner from "../shared/ProfileBanner";
 import { Badge } from "@/components/ui/badge";
-import { Bike, CircleUser, ShieldUser } from 'lucide-react';
+import { Bike, CircleUser, ShieldUser } from "lucide-react";
 import clsx from "clsx";
 import UserInfo from "./UserInfo";
 
 const AllUsers = () => {
-
   //* States
   const { accessToken } = useAuthStore();
   const [users, setUsers] = useState<TUser[]>([]);
@@ -26,8 +25,14 @@ const AllUsers = () => {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const data = await res.json();
-      // console.log('data is called'); 
+      // console.log('data is called');
       setUsers(data);
+
+      //? keep selectedUser in sync with refreshed data
+      if (selectedUser) {
+        const updated = data.find((u: TUser) => u._id === selectedUser._id);
+        if (updated) setSelectedUser(updated);
+      }
     } catch (err) {
       console.error("Error fetching users: ", err);
     } finally {
@@ -62,24 +67,21 @@ const AllUsers = () => {
               <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">
                 {selectedUser.name}
               </h2>
-              <Badge 
+              <Badge
                 variant="secondary"
                 className={clsx(
-                  selectedUser?.role === "Admin" && "bg-blue-500 dark:bg-blue-600",
-                  selectedUser?.role === "Delivery Agent" && "bg-pink-500 dark:bg-gray-600",
-                  selectedUser?.role === "Customer" && "bg-green-500 dark:bg-green-600",
+                  selectedUser?.role === "Admin" &&
+                    "bg-blue-500 dark:bg-blue-600",
+                  selectedUser?.role === "Delivery Agent" &&
+                    "bg-pink-500 dark:bg-gray-600",
+                  selectedUser?.role === "Customer" &&
+                    "bg-green-500 dark:bg-green-600",
                   " text-white"
                 )}
               >
-                {
-                  selectedUser?.role === "Admin" && <CircleUser />
-                }
-                {
-                  selectedUser?.role === "Delivery Agent" && <Bike />
-                }
-                {
-                  selectedUser?.role === "Customer" && <ShieldUser />
-                }
+                {selectedUser?.role === "Admin" && <CircleUser />}
+                {selectedUser?.role === "Delivery Agent" && <Bike />}
+                {selectedUser?.role === "Customer" && <ShieldUser />}
                 {selectedUser.role}
               </Badge>
               <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem] font-semibold italic">
@@ -102,11 +104,13 @@ const AllUsers = () => {
                 <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
                   Status
                 </h2>
-                <p className={clsx(
+                <p
+                  className={clsx(
                     "text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]",
                     selectedUser.status === "active" && "text-green-700",
-                    selectedUser.status === "inactive" && "text-red-700",
-                  )}>
+                    selectedUser.status === "inactive" && "text-red-700"
+                  )}
+                >
                   {selectedUser.status || "Not Provided"}
                 </p>
               </div>
@@ -122,8 +126,14 @@ const AllUsers = () => {
             </div>
 
             <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
-              <h3 className="text-lg font-semibold text-center">Other Information</h3>
-              <UserInfo profile={selectedUser!} setProfile={setSelectedUser} fetchProfile={fetchAllUsers} />
+              <h3 className="text-lg font-semibold text-center">
+                Other Information
+              </h3>
+              <UserInfo
+                profile={selectedUser!}
+                setProfile={setSelectedUser}
+                fetchProfile={fetchAllUsers}
+              />
             </div>
 
             <button
