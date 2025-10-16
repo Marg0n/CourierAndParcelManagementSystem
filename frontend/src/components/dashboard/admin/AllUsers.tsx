@@ -6,9 +6,10 @@ import type { TUser } from "@/utils/types";
 import { useEffect, useState } from "react";
 import ProfileBanner from "../shared/ProfileBanner";
 import { Badge } from "@/components/ui/badge";
-import { Bike, CircleUser, ShieldUser } from "lucide-react";
+import { Bike, CircleUser, ShieldUser, X } from "lucide-react";
 import clsx from "clsx";
 import UserInfo from "./UserInfo";
+import { Button } from "@/components/ui/button";
 
 const AllUsers = () => {
   //* States
@@ -136,12 +137,13 @@ const AllUsers = () => {
               />
             </div>
 
-            <button
+            <Button
               onClick={() => setSelectedUser(null)}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md"
+              className="top-4 right-4 p-4 hover:bg-red-400! rounded-full absolute"
+              variant={"secondary"}
             >
-              Close
-            </button>
+              <X/>
+            </Button>
           </div>
         </div>
       )}
