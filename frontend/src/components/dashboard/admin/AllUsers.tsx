@@ -125,7 +125,8 @@ const AllUsers = () => {
                 </p>
               </div>
             </div>
-
+                  
+            {/* All information */}
             <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
               <h3 className="text-lg font-semibold text-center">
                 Other Information
@@ -137,6 +138,7 @@ const AllUsers = () => {
               />
             </div>
 
+            {/* Close button */}
             <Button
               onClick={() => setSelectedUser(null)}
               className="top-4 right-4 p-4 hover:bg-red-400! rounded-full absolute"

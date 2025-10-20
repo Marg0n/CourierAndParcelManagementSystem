@@ -41,8 +41,8 @@ export interface Parcel {
 
 //* Props for Table component
 export interface TableProps {
-  data: TUser[] | Parcel[];
-  onView?: (view: TUser | Parcel) => void;
+  data: TUser[];
+  onView?: (view: TUser) => void;
   onEdit?: (user: TUser) => void;
   onDelete?: () => void;
 }

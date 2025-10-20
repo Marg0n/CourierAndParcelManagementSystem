@@ -27,6 +27,9 @@ const Table: React.FC<TableProps> = ({ data, onView, onEdit, onDelete }) => {
     pageSize: 5,
   });
 
+  //* Filterable fields
+  const filterableColumns = ["name", "email", "role", "status"];
+
   const columns = useMemo<ColumnDef<TUser>[]>(
     () => [
       {
@@ -85,7 +88,13 @@ const Table: React.FC<TableProps> = ({ data, onView, onEdit, onDelete }) => {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     globalFilterFn: (row, columnId, filterValue) => {
+
+      if (!filterableColumns.includes(columnId)) return false;
+      
       const cell = row.getValue<string>(columnId);
+
+      if (typeof cell !== 'string' || typeof filterValue !== 'string') return false;
+
       return cell.toLowerCase().includes(filterValue.toLowerCase());
     },
   });
