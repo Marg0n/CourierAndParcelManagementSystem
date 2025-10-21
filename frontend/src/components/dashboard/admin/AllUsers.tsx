@@ -59,93 +59,97 @@ const AllUsers = () => {
       {/* Modal */}
       {selectedUser && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] h-[80vh] relative overflow-x-auto">
-            {/* Avatar or other fields here */}
-            <ProfileBanner profile={selectedUser!} />
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] h-[80vh] relative overflow-hidden">
 
-            {/* Name, Email & Role */}
-            <div className="w-full text-center mt-16">
-              <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">
-                {selectedUser.name}
-              </h2>
-              <Badge
-                variant="secondary"
-                className={clsx(
-                  selectedUser?.role === "Admin" &&
-                    "bg-blue-500 dark:bg-blue-600",
-                  selectedUser?.role === "Delivery Agent" &&
-                    "bg-pink-500 dark:bg-gray-600",
-                  selectedUser?.role === "Customer" &&
-                    "bg-green-500 dark:bg-green-600",
-                  " text-white"
-                )}
-              >
-                {selectedUser?.role === "Admin" && <CircleUser />}
-                {selectedUser?.role === "Delivery Agent" && <Bike />}
-                {selectedUser?.role === "Customer" && <ShieldUser />}
-                {selectedUser.role}
-              </Badge>
-              <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem] font-semibold italic">
-                {selectedUser.email}
-              </p>
-            </div>
-
-            {/* Crucial Info */}
-            <div className="w-full p-4 mt-8 border-t dark:border-slate-700 border-border flex items-center justify-between">
-              <div className="flex items-center justify-center flex-col">
-                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
-                  Phone
-                </h2>
-                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
-                  {selectedUser.phone || "Not Provided"}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center flex-col">
-                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
-                  Status
-                </h2>
-                <p
-                  className={clsx(
-                    "text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]",
-                    selectedUser.status === "active" && "text-green-700",
-                    selectedUser.status === "inactive" && "text-red-700"
-                  )}
-                >
-                  {selectedUser.status || "Not Provided"}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-center flex-col">
-                <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
-                  Emergency Contact
-                </h2>
-                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
-                  {selectedUser.emergencyContact || "Not Provided"}
-                </p>
-              </div>
-            </div>
-                  
-            {/* All information */}
-            <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
-              <h3 className="text-lg font-semibold text-center">
-                Other Information
-              </h3>
-              <UserInfo
-                profile={selectedUser!}
-                setProfile={setSelectedUser}
-                fetchProfile={fetchAllUsers}
-              />
-            </div>
-
-            {/* Close button */}
+            {/* Close Sticky Button */}
             <Button
               onClick={() => setSelectedUser(null)}
-              className="top-4 right-4 p-4 hover:bg-red-400! rounded-full absolute"
+              className="top-4 right-4 p-4 hover:bg-red-400! bg-red-300 rounded-full sticky z-50"
               variant={"secondary"}
             >
-              <X/>
+              <X />
             </Button>
+
+            {/* Scrollable Content */}
+            <div className="overflow-x-auto h-full pb-6">
+              {/* Avatar or other fields here */}
+              <ProfileBanner profile={selectedUser!} />
+
+              {/* Name, Email & Role */}
+              <div className="w-full text-center mt-16">
+                <h2 className="font-[600] dark:text-[#abc2d3] text-[1.4rem]">
+                  {selectedUser.name}
+                </h2>
+                <Badge
+                  variant="secondary"
+                  className={clsx(
+                    selectedUser?.role === "Admin" &&
+                      "bg-blue-500 dark:bg-blue-600",
+                    selectedUser?.role === "Delivery Agent" &&
+                      "bg-pink-500 dark:bg-gray-600",
+                    selectedUser?.role === "Customer" &&
+                      "bg-green-500 dark:bg-green-600",
+                    " text-white",
+                  )}
+                >
+                  {selectedUser?.role === "Admin" && <CircleUser />}
+                  {selectedUser?.role === "Delivery Agent" && <Bike />}
+                  {selectedUser?.role === "Customer" && <ShieldUser />}
+                  {selectedUser.role}
+                </Badge>
+                <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem] font-semibold italic">
+                  {selectedUser.email}
+                </p>
+              </div>
+
+              {/* Crucial Info */}
+              <div className="w-full p-4 mt-8 border-t dark:border-slate-700 border-border flex items-center justify-between">
+                <div className="flex items-center justify-center flex-col">
+                  <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                    Phone
+                  </h2>
+                  <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                    {selectedUser.phone || "Not Provided"}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center flex-col">
+                  <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                    Status
+                  </h2>
+                  <p
+                    className={clsx(
+                      "text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]",
+                      selectedUser.status === "active" && "text-green-700",
+                      selectedUser.status === "inactive" && "text-red-700",
+                    )}
+                  >
+                    {selectedUser.status || "Not Provided"}
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-center flex-col">
+                  <h2 className=" text-[1.2rem] dark:text-[#abc2d3] font-[600]">
+                    Emergency Contact
+                  </h2>
+                  <p className="text-[#424242] dark:text-[#abc2d3]/80 text-[0.9rem]">
+                    {selectedUser.emergencyContact || "Not Provided"}
+                  </p>
+                </div>
+              </div>
+
+              {/* All information */}
+              <div className="w-full p-4 mt-4 border-t dark:border-slate-700 border-border">
+                <h3 className="text-lg font-semibold text-center">
+                  Other Information
+                </h3>
+                <UserInfo
+                  profile={selectedUser!}
+                  setProfile={setSelectedUser}
+                  fetchProfile={fetchAllUsers}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
