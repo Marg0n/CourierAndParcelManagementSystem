@@ -10,6 +10,7 @@ const AssignedParcels = () => {
 
   //* State managements
   const token = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
   const [parcels, setParcels] = useState<Parcel[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +38,11 @@ const AssignedParcels = () => {
     fetchParcels();
   }, [token]);
 
+  //* Filter the parcel
+  const filteredParcels = parcels.filter(
+    (parcel) => parcel.agentEmail === user?.email
+  );  
+
   if (loading) return <LoadingPage />;
 
   return (
@@ -57,7 +63,7 @@ const AssignedParcels = () => {
               </tr>
             </thead>
             <tbody>
-              {parcels.map((parcel) => (
+              {filteredParcels.map((parcel) => (
                 <tr key={parcel._id} className="border-t">
                   <td className="px-4 py-2">{parcel._id}</td>
                   <td className="px-4 py-2">{parcel.customerEmail}</td>
