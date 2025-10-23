@@ -9,6 +9,7 @@ import type { Parcel } from "@/utils/types";
 
 const MyBookings = () => {
   const token = useAuthStore((state) => state.accessToken);
+  const user = useAuthStore((state) => state.user);
   const [bookings, setBookings] = useState<Parcel[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,6 +48,12 @@ const MyBookings = () => {
       </div>
     );
   }
+
+  //* Filter bookings
+  const filteredBookings = bookings.filter(
+    (parcel) => parcel.customerEmail === user?.email
+  );
+  
 
   return (
     // <div className="p-4">
@@ -90,7 +97,7 @@ const MyBookings = () => {
       <h2 className="text-xl font-semibold text-sky-700">My Bookings</h2>
 
       <div className="grid gap-4">
-        {bookings.map((parcel) => (
+        {filteredBookings.map((parcel) => (
           <div
             key={parcel._id}
             className="border rounded-lg p-4 shadow-sm bg-white hover:shadow-md transition"
