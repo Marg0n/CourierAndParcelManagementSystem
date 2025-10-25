@@ -28,6 +28,8 @@ export interface TUser {
   statusChangeReason?: string;
   statusUpdatedByAdmin?: Date,
   statusChangedBy?: string;
+  customerEmail?: string;
+  agentEmail?: string;
 }
 
 //* Interface for booking/parcel
