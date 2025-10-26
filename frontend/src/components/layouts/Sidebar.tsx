@@ -86,7 +86,7 @@ export const Sidebar = ({ role }: SidebarProps) => {
   return (
     <aside className="
         w-16 lg:w-64 
-        bg-white shadow-md h-screen 
+        bg-white shadow-md min-h-screen 
         p-4 lg:p-6 flex flex-col justify-between
         transition-all duration-300
     ">
