@@ -95,9 +95,9 @@ const BookParcel = () => {
   // );
 
   return (
-    <div className="w-[90%] h-[80vh] mx-auto ">
-      <h1 className="text-2xl font-bold text-gray-800">Book Parcels</h1>
-      <p className="text-gray-600 mt-2 mb-6">
+    <div className="w-[90%] h-[80vh] mx-auto space-y-4">
+      <h1 className="text-2xl font-semibold text-center text-sky-700">Book Parcels</h1>
+      <p className="text-gray-600 text-center">
         Fill in the details below to book a parcel.
       </p>
 

@@ -94,7 +94,7 @@ const MyBookings = () => {
     //   </div>
     // </div>
     <div className="p-4 space-y-4">
-      <h2 className="text-xl font-semibold text-sky-700">My Bookings</h2>
+      <h2 className="text-2xl font-semibold text-center text-sky-700">My Bookings</h2>
 
       <div className="grid gap-4">
         {filteredBookings.map((parcel) => (
