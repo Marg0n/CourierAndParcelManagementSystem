@@ -32,13 +32,29 @@ export interface TUser {
   agentEmail?: string;
 }
 
+//* Location
+export interface Location {
+  lat: number;
+  lng: number;
+}
+
+//* Tracking event
+export interface TrackingEvent {
+  status: string;
+  timestamp: string; // ISO date string  
+  dropOffLocation?: Location;
+  pickupLocation?: Location;
+}
+
 //* Interface for booking/parcel
 export interface Parcel {
   _id: string;
   customerEmail: string;
   agentEmail?: string;
-  status: string;
+  trackingHistory?: TrackingEvent[];
   createdAt: string;
+  sensitiveParcelContent?: boolean;
+  notes?: string;
 }
 
 //* Props for Table component

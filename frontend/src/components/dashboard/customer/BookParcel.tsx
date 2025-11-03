@@ -17,38 +17,45 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { toast } from "sonner"; // optional if you use toast
-import type { TUser } from "@/utils/types";
+import { toast } from "sonner"; 
+import { useAuthStore } from "@/store/useAuthStore";
 
 //* Validation schema using zod
 const formSchema = z.object({
   customerEmail: z.string().email("Enter a valid email"),
-  agentEmail: z.string().email("Enter a valid agent email"),
+  sensitiveParcelContent: z.boolean(),
   pickupLocation: z.string().min(3, "Pickup location is required"),
-  dropoffLocation: z.string().min(3, "Drop-off location is required"),
+  // dropOffLocation: z.string().min(3, "Drop-off location is required"),
+  notes: z.string().optional(),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 const BookParcel = () => {
+
+  //* Form
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       customerEmail: "",
-      agentEmail: "",
+      sensitiveParcelContent: false,
       pickupLocation: "",
-      dropoffLocation: "",
+      notes: "",
+      // dropOffLocation: "",
     },
   });
 
+  //* States
+  const {user} = useAuthStore();
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(values: Partial<TUser>) {
+  async function onSubmit(values: FormValues) {
     setLoading(true);
     try {
       //! Example payload that matches your backend JSON structure
       const payload = {
-        customerEmail: values.customerEmail,
-        agentEmail: values.agentEmail,
-        status: "Parcel Booked",
+        customerEmail: values?.customerEmail,
+        sensitiveParcelContent: values?.sensitiveParcelContent,
         trackingHistory: [
           {
             status: "Parcel Booked",
@@ -56,8 +63,8 @@ const BookParcel = () => {
             location: { lat: 23.8103, lng: 90.4125 }, //? example coords
           },
         ],
-        currentLocation: { lat: 23.8103, lng: 90.4125 },
         createdAt: new Date().toISOString(),
+        notes: values?.notes,
       };
 
       //? send to backend (example)
@@ -103,11 +110,13 @@ const BookParcel = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Parcel Booking Form</CardTitle>
+          <CardTitle className="text-center">Parcel Booking Form</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+
+              {/* Customer Email */}
               <FormField
                 control={form.control}
                 name="customerEmail"
@@ -115,27 +124,37 @@ const BookParcel = () => {
                   <FormItem>
                     <FormLabel>Customer Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="tina@mail.com" {...field} />
+                      <Input placeholder={user?.email || "tina@mail.com" }{...field} readOnly />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Sensitive Contents */}
               <FormField
                 control={form.control}
-                name="agentEmail"
+                name="sensitiveParcelContent"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Agent Email</FormLabel>
+                    <FormLabel>Sensitive Parcel Content</FormLabel>
                     <FormControl>
-                      <Input placeholder="hulk@mail.com" {...field} />
+                      <select
+                        {...field}
+                        value={field.value ? "true" : "false"}
+                        onChange={(e) => field.onChange(e.target.value === "true")}
+                        className="w-full border rounded-md px-3 py-2"
+                      >
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Pickup Location */}
               <FormField
                 control={form.control}
                 name="pickupLocation"
@@ -150,20 +169,26 @@ const BookParcel = () => {
                 )}
               />
 
+              {/* Notes */}
               <FormField
                 control={form.control}
-                name="dropoffLocation"
+                name="notes"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Drop-off Location</FormLabel>
+                    <FormLabel>Notes</FormLabel>
                     <FormControl>
-                      <Input placeholder="Rajshahi, Bangladesh" {...field} />
+                      <textarea
+                        {...field}
+                        placeholder="Add any delivery notes..."
+                        className="w-full border rounded-md px-3 py-2 h-24"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              {/* Button */}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Booking..." : "Book Parcel"}
               </Button>
