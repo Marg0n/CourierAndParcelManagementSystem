@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { toast } from "sonner"; 
+import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
 
 //* Validation schema using zod
 const formSchema = z.object({
   customerEmail: z.string().email("Enter a valid email"),
-  sensitiveParcelContent: z.boolean(),
+  fragileItem: z.boolean(),
+  customerPhone: z.string(),
   pickupLocation: z.string().min(3, "Pickup location is required"),
   // dropOffLocation: z.string().min(3, "Drop-off location is required"),
   notes: z.string().optional(),
@@ -32,22 +33,29 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const BookParcel = () => {
+  //* States
+  const { user } = useAuthStore();
+  const [loading, setLoading] = useState(false);
 
   //* Form
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      customerEmail: "",
-      sensitiveParcelContent: false,
+      customerEmail: user?.email || "",
+      customerPhone: "",
+      fragileItem: false,
       pickupLocation: "",
       notes: "",
       // dropOffLocation: "",
     },
   });
 
-  //* States
-  const {user} = useAuthStore();
-  const [loading, setLoading] = useState(false);
+  //* Update customerEmail if user changes (e.g., login after mount)
+  useEffect(() => {
+    if (user?.email) {
+      form.setValue("customerEmail", user.email);
+    }
+  }, [user, form]);
 
   async function onSubmit(values: FormValues) {
     setLoading(true);
@@ -55,7 +63,7 @@ const BookParcel = () => {
       //! Example payload that matches your backend JSON structure
       const payload = {
         customerEmail: values?.customerEmail,
-        sensitiveParcelContent: values?.sensitiveParcelContent,
+        sensitiveParcelContent: values?.fragileItem,
         trackingHistory: [
           {
             status: "Parcel Booked",
@@ -103,7 +111,9 @@ const BookParcel = () => {
 
   return (
     <div className="w-[90%] h-[80vh] mx-auto space-y-4">
-      <h1 className="text-2xl font-semibold text-center text-sky-700">Book Parcels</h1>
+      <h1 className="text-2xl font-semibold text-center text-sky-700">
+        Book Parcels
+      </h1>
       <p className="text-gray-600 text-center">
         Fill in the details below to book a parcel.
       </p>
@@ -115,39 +125,67 @@ const BookParcel = () => {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-
               {/* Customer Email */}
               <FormField
                 control={form.control}
                 name="customerEmail"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Customer Email</FormLabel>
+                    <FormLabel>
+                      Customer Email<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder={user?.email || "tina@mail.com" }{...field} readOnly />
+                      <Input
+                        // placeholder={user?.email || "tina@mail.com"}
+                        {...field}
+                        readOnly
+                        className="bg-gray-100"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Sensitive Contents */}
+              {/* fragile Item */}
               <FormField
                 control={form.control}
-                name="sensitiveParcelContent"
+                name="fragileItem"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sensitive Parcel Content</FormLabel>
+                    <FormLabel>
+                      Fragile Item
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <select
                         {...field}
                         value={field.value ? "true" : "false"}
-                        onChange={(e) => field.onChange(e.target.value === "true")}
+                        onChange={(e) =>
+                          field.onChange(e.target.value === "true")
+                        }
                         className="w-full border rounded-md px-3 py-2"
                       >
                         <option value="false">No</option>
                         <option value="true">Yes</option>
                       </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Phone Number */}
+              <FormField
+                control={form.control}
+                name="customerPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Phone<span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="01234567489" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,7 +198,9 @@ const BookParcel = () => {
                 name="pickupLocation"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Pickup Location</FormLabel>
+                    <FormLabel>
+                      Pickup Location<span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Dhaka, Bangladesh" {...field} />
                     </FormControl>

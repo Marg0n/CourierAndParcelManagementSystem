@@ -50,10 +50,11 @@ export interface TrackingEvent {
 export interface Parcel {
   _id: string;
   customerEmail: string;
+  customerPhone?: string;
   agentEmail?: string;
   trackingHistory?: TrackingEvent[];
   createdAt: string;
-  sensitiveParcelContent?: boolean;
+  fragileItem?: boolean;
   notes?: string;
 }
 
