@@ -1,10 +1,13 @@
 import { Parser } from "json2csv";
+import fs from "fs";
 
-export function exportParcelsToCSV(parcels, res) {
+export const exportToCSV = (data, fileName) => {
   const parser = new Parser();
-  const csv = parser.parse(parcels);
-  res.attachment("parcels.csv").send(csv);
-}
+  const csv = parser.parse(data);
+
+  fs.writeFileSync(fileName, csv, "utf-8");
+  return fileName;
+};
 
 /*
 //! how to use
@@ -16,15 +19,10 @@ res.download(file);
 
 */
 
-/*
-import { Parser } from "json2csv";
-import fs from "fs";
-
-export const exportToCSV = (data, fileName) => {
-  const parser = new Parser();
-  const csv = parser.parse(data);
-
-  fs.writeFileSync(fileName, csv, "utf-8");
-  return fileName;
-};
-*/
+  // import { Parser } from "json2csv";
+  
+  // export function exportToCSV(parcels, res) {
+  //   const parser = new Parser();
+  //   const csv = parser.parse(parcels);
+  //   res.attachment("parcels.csv").send(csv);
+  // }

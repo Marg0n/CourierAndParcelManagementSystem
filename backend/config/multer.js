@@ -1,5 +1,43 @@
 import multer from "multer";
 
+//? Store files in memory as Buffer (used for MongoDB storage)
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 //? 5MB limit (safe default)
+  },
+  fileFilter: (req, file, cb) => {
+    //? Allow only images
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files are allowed"), false);
+    }
+    cb(null, true);
+  }
+});
+
+export default upload;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
+import multer from "multer";
+
 //* -------------------------------
 //* Common memory storage for MongoDB
 //* -------------------------------
@@ -47,6 +85,8 @@ export const uploadMultipleImages = multer({
   limits: { fileSize: 10 * 1024 * 1024 },
 }).array("images", 5); //! max 5 files
 
+*/
+
 /**
  * How to use in routes:
  
@@ -89,26 +129,3 @@ Same logic for avatars, banners, or parcel images.
 Easy to extend if you later want thumbnails or multiple images.
  */
 
-
-/*
-import multer from "multer";
-
-//? Store files in memory as Buffer (used for MongoDB storage)
-const storage = multer.memoryStorage();
-
-const upload = multer({
-  storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 //? 5MB limit (safe default)
-  },
-  fileFilter: (req, file, cb) => {
-    //? Allow only images
-    if (!file.mimetype.startsWith("image/")) {
-      return cb(new Error("Only image files are allowed"), false);
-    }
-    cb(null, true);
-  }
-});
-
-export default upload;
-*/

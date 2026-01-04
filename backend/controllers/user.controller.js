@@ -2,6 +2,8 @@ import { usersCollection } from "../db/mongo.js";
 import { ObjectId } from "mongodb";
 import fs from "fs";
 import path from "path";
+import { hashPassword, comparePassword } from "../utils/password.js";
+
 
 //* Folder paths for fallback storage (optional)
 const AVATAR_FOLDER = path.join(process.cwd(), "uploads", "avatars");
