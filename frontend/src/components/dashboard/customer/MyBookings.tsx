@@ -106,14 +106,14 @@ const MyBookings = () => {
             <div className="flex justify-between items-center">
               <span
                 className={`px-2 py-1 rounded text-xs font-medium ${
-                  parcel.status === "Delivered"
+                  parcel.trackingHistory?.[0]?.status === "Delivered"
                     ? "bg-green-100 text-green-700"
-                    : parcel.status === "In Transit"
+                    : parcel.trackingHistory?.[0]?.status === "In Transit"
                     ? "bg-blue-100 text-blue-700"
                     : "bg-yellow-100 text-yellow-700"
                 }`}
               >
-                {parcel.status}
+                {parcel.trackingHistory?.[0]?.status}
               </span>
               <span className="text-sm text-gray-500">
                 {new Date(parcel.createdAt).toLocaleDateString()}
