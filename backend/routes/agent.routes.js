@@ -25,6 +25,8 @@ import verifyToken from "../middlewares/verifyToken.js";
 import verifyAgent from "../middlewares/verifyDeliveryAgent.js";
 import * as agentController from "../controllers/agent.controller.js";
 
+const router = express.Router();
+
 //* Delivery Agent routes
 router.get("/parcels", verifyToken, verifyAgent, agentController.getAssignedParcels);
 router.put("/parcels/:id/status", verifyToken, verifyAgent, agentController.updateParcelStatus);
