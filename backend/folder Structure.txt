@@ -1,0 +1,46 @@
+src/
+│
+├── app.js                 # Express app setup (middlewares, routes)
+├── server.js              # Server start (listen)
+│
+├── config/
+│   ├── env.js             # dotenv config
+│   ├── cors.js            # CORS config
+│   └── multer.js          # Multer config
+│
+├── db/
+│   └── mongo.js           # MongoDB connection
+│
+├── middlewares/
+│   ├── verifyToken.js
+│   ├── verifyAdmin.js
+│   ├── verifyCustomer.js
+│   └── verifyDeliveryAgent.js
+│
+├── routes/
+│   ├── auth.routes.js
+│   ├── user.routes.js
+│   ├── parcel.routes.js
+│   ├── admin.routes.js
+│   └── agent.routes.js
+│
+├── controllers/
+│   ├── auth.controller.js
+│   ├── user.controller.js
+│   ├── parcel.controller.js
+│   ├── admin.controller.js
+│   └── agent.controller.js
+│
+├── services/
+│   ├── auth.service.js
+│   ├── user.service.js
+│   └── parcel.service.js
+│
+├── utils/
+│   ├── jwt.js
+│   ├── password.js
+│   ├── csvExporter.js
+│   └── pdfExporter.js
+│
+└── constants/
+    └── roles.js
