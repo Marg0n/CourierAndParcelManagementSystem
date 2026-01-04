@@ -1,4 +1,153 @@
 import { usersCollection } from "../db/mongo.js";
+import { ObjectId } from "mongodb";
+import fs from "fs";
+import path from "path";
+
+//* Folder paths for storing files
+const AVATAR_FOLDER = path.join(process.cwd(), "uploads", "avatars");
+const BANNER_FOLDER = path.join(process.cwd(), "uploads", "banners");
+
+//* Ensure directories exist
+fs.mkdirSync(AVATAR_FOLDER, { recursive: true });
+fs.mkdirSync(BANNER_FOLDER, { recursive: true });
+
+//* ------------------------------
+//* Get current user info
+//* ------------------------------
+export const getUser = async (req, res) => {
+  try {
+    const email = req.decoded.email;
+    const user = await usersCollection.findOne({ email }, { projection: { password: 0 } });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//* ------------------------------
+//* Update user info
+//* ------------------------------
+export const updateUser = async (req, res) => {
+  try {
+    const email = req.params.email;
+    const updateData = req.body;
+
+    const result = await usersCollection.updateOne(
+      { email },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) return res.status(404).json({ message: "User not found" });
+
+    res.json({ success: true, modifiedCount: result.modifiedCount });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+//* ------------------------------
+//* Upload avatar
+//* ------------------------------
+export const uploadAvatar = async (req, res) => {
+  try {
+    const { file } = req;
+    const userId = req.params.id;
+
+    if (!file) return res.status(400).json({ message: "No file uploaded" });
+
+    // Store image buffer and MIME type in DB
+    await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          avatar: {
+            data: file.buffer,
+            contentType: file.mimetype
+          }
+        }
+      }
+    );
+
+    res.json({ success: true, message: "Avatar uploaded" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Avatar upload failed" });
+  }
+};
+
+//* ------------------------------
+//* Upload banner
+//* ------------------------------
+export const uploadBanner = async (req, res) => {
+  try {
+    const { file } = req;
+    const userId = req.params.id;
+
+    if (!file) return res.status(400).json({ message: "No file uploaded" });
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          banner: {
+            data: file.buffer,
+            contentType: file.mimetype
+          }
+        }
+      }
+    );
+
+    res.json({ success: true, message: "Banner uploaded" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Banner upload failed" });
+  }
+};
+
+//* ------------------------------
+//* Get avatar image
+//* ------------------------------
+export const getAvatar = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user?.avatar?.data) return res.status(404).json({ message: "Avatar not found" });
+
+    res.set("Content-Type", user.avatar.contentType);
+    res.send(user.avatar.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to retrieve avatar" });
+  }
+};
+
+//* ------------------------------
+//* Get banner image
+//* ------------------------------
+export const getBanner = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+
+    if (!user?.banner?.data) return res.status(404).json({ message: "Banner not found" });
+
+    res.set("Content-Type", user.banner.contentType);
+    res.send(user.banner.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to retrieve banner" });
+  }
+};
+
+
+/*
+import { usersCollection } from "../db/mongo.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
@@ -64,3 +213,4 @@ export const getUserInfo = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
+*/
