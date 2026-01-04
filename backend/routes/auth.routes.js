@@ -3,14 +3,16 @@ import {
   login,
   register,
   refreshToken,
-  generateJWT
+  createJWT,
+  logout
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
+router.post("/jwt", createJWT);
 router.post("/refresh", refreshToken);
-router.post("/jwt", generateJWT);
+router.get("/logout", logout);
 
 export default router;
