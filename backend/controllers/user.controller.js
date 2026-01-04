@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import fs from "fs";
 import path from "path";
 
-//* Folder paths for storing files
+//* Folder paths for fallback storage (optional)
 const AVATAR_FOLDER = path.join(process.cwd(), "uploads", "avatars");
 const BANNER_FOLDER = path.join(process.cwd(), "uploads", "banners");
 
@@ -17,7 +17,10 @@ fs.mkdirSync(BANNER_FOLDER, { recursive: true });
 export const getUser = async (req, res) => {
   try {
     const email = req.decoded.email;
-    const user = await usersCollection.findOne({ email }, { projection: { password: 0 } });
+    const user = await usersCollection.findOne(
+      { email },
+      { projection: { password: 0 } } // hide password
+    );
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -41,7 +44,8 @@ export const updateUser = async (req, res) => {
       { $set: updateData }
     );
 
-    if (result.matchedCount === 0) return res.status(404).json({ message: "User not found" });
+    if (result.matchedCount === 0)
+      return res.status(404).json({ message: "User not found" });
 
     res.json({ success: true, modifiedCount: result.modifiedCount });
   } catch (err) {
@@ -67,13 +71,14 @@ export const uploadAvatar = async (req, res) => {
         $set: {
           avatar: {
             data: file.buffer,
-            contentType: file.mimetype
-          }
-        }
+            contentType: file.mimetype,
+          },
+          lastUpdated: new Date(),
+        },
       }
     );
 
-    res.json({ success: true, message: "Avatar uploaded" });
+    res.json({ success: true, message: "Avatar uploaded successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Avatar upload failed" });
@@ -96,13 +101,14 @@ export const uploadBanner = async (req, res) => {
         $set: {
           banner: {
             data: file.buffer,
-            contentType: file.mimetype
-          }
-        }
+            contentType: file.mimetype,
+          },
+          lastUpdated: new Date(),
+        },
       }
     );
 
-    res.json({ success: true, message: "Banner uploaded" });
+    res.json({ success: true, message: "Banner uploaded successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Banner upload failed" });
@@ -117,7 +123,8 @@ export const getAvatar = async (req, res) => {
     const userId = req.params.id;
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
-    if (!user?.avatar?.data) return res.status(404).json({ message: "Avatar not found" });
+    if (!user?.avatar?.data)
+      return res.status(404).json({ message: "Avatar not found" });
 
     res.set("Content-Type", user.avatar.contentType);
     res.send(user.avatar.data);
@@ -135,7 +142,8 @@ export const getBanner = async (req, res) => {
     const userId = req.params.id;
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
 
-    if (!user?.banner?.data) return res.status(404).json({ message: "Banner not found" });
+    if (!user?.banner?.data)
+      return res.status(404).json({ message: "Banner not found" });
 
     res.set("Content-Type", user.banner.contentType);
     res.send(user.banner.data);
