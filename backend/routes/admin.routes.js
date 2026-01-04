@@ -1,21 +1,15 @@
 import express from "express";
 import verifyToken from "../middlewares/verifyToken.js";
-import { verifyRole } from "../middlewares/verifyRole.js";
-import {
-  getAllUsers,
-  getAllParcels,
-  updateUserByAdmin,
-  assignAgentToParcel
-} from "../controllers/admin.controller.js";
+import verifyAdmin from "../middlewares/verifyAdmin.js";
+import * as adminController from "../controllers/admin.controller.js";
 
 const router = express.Router();
-const verifyAdmin = verifyRole("Admin");
 
-router.use(verifyToken, verifyAdmin);
-
-router.get("/users", getAllUsers);
-router.get("/parcels", getAllParcels);
-router.patch("/users/:id", updateUserByAdmin);
-router.put("/parcels/:id/assign", assignAgentToParcel);
+//* Admin-only routes
+router.get("/users", verifyToken, verifyAdmin, adminController.getAllUsers);
+router.get("/parcels", verifyToken, verifyAdmin, adminController.getAllParcels);
+router.get("/dashboard-metrics", verifyToken, verifyAdmin, adminController.getDashboardMetrics);
+router.patch("/users/:id", verifyToken, verifyAdmin, adminController.updateUserData);
+router.put("/parcels/:id/assign", verifyToken, verifyAdmin, adminController.assignAgent);
 
 export default router;
