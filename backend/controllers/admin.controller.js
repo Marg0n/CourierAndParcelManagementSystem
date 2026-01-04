@@ -1,7 +1,7 @@
 import { usersCollection, parcelsCollection } from "../db/mongo.js";
 import { ObjectId } from "mongodb";
 
-//? Get all users
+//* Get all users
 export const getAllUsers = async (req, res) => {
   try {
     const users = await usersCollection.find({}, { projection: { password: 0 } }).toArray();
@@ -12,7 +12,7 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-//? Get all parcels
+//* Get all parcels
 export const getAllParcels = async (req, res) => {
   try {
     const parcels = await parcelsCollection.find().toArray();
@@ -23,7 +23,7 @@ export const getAllParcels = async (req, res) => {
   }
 };
 
-//? Update user role/status
+//* Update user role/status
 export const updateUserByAdmin = async (req, res) => {
   try {
     const userId = req.params.id;
@@ -46,7 +46,7 @@ export const updateUserByAdmin = async (req, res) => {
   }
 };
 
-//? Assign agent to parcel
+//* Assign agent to parcel
 export const assignAgentToParcel = async (req, res) => {
   try {
     const { id } = req.params;
