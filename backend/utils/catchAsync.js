@@ -7,3 +7,11 @@ const catchAsync = (fn) => {
 };
 
 export default catchAsync;
+
+/*
+//*Example usage:
+export const getUser = catchAsync(async (req, res, next) => {
+  //? throw new AppError("User not found", 404);
+  //? next(new AppError("User not found", 404));
+});
+*/
