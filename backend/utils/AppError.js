@@ -1,3 +1,5 @@
+//* Custom Error Class (for API errors)
+
 class AppError extends Error {
     constructor(message, statusCode) {
         super(message);
