@@ -36,6 +36,10 @@ import parcelRoutes from "./routes/parcel.routes.js";
 
 //* Middlewares
 import verifyToken from "./middlewares/verifyToken.js";
+import globalErrorHandler from "./middlewares/globalErrorHandler.js";
+
+//* Utils
+import AppError from "./utils/AppError.js";
 
 //* DB connection
 import { MongoClient, ServerApiVersion } from "mongodb";
@@ -67,9 +71,22 @@ app.get("/", (_, res) => {
 //* ----------------------------
 //* 404 Handler
 //* ----------------------------
-app.use((_, res) => {
-  res.status(404).json({ message: "Route not found!" });
+// app.use((_, res) => {
+//   res.status(404).json({ message: "Route not found!" });
+// });
+
+//* ----------------------------
+//* Catch all routes (/*)
+//* ----------------------------
+app.all("*", (req, res, next) => {
+  next(
+    new AppError(
+      `Can't find ${req.originalUrl} on this server`,
+      404
+    )
+  );
 });
+
 
 //* ----------------------------
 //* Error Handler
@@ -78,5 +95,11 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Internal server error", error: err.message });
 });
+
+//* ----------------------------
+//* Global Error Handler
+//* ----------------------------
+app.use(globalErrorHandler);
+
 
 export default app;

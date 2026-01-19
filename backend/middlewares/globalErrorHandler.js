@@ -30,6 +30,22 @@ const globalErrorHandler = (err, req, res, next) => {
             message: "Something went wrong!",
         });
     }
+
+    //? 🔹 Database error
+    if (err.name === "MongoServerError") {
+        return res.status(err.statusCode).json({
+            status: err.status,
+            message: err.message,
+        });
+    }
+
+    //? 🔹 Programming or unknown error
+    console.error("🔥 ERROR:", err);
+
+    return res.status(500).json({
+        status: "error",
+        message: "Something went wrong!",
+    });
 };
 
 export default globalErrorHandler;
