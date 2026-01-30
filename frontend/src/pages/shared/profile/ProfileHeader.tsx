@@ -10,7 +10,7 @@ const ProfileHeader = ({ data }: { data: TUser }) => {
       />
       <img
         src={
-          data?.avatarUrl ||
+          data?.avatarUrl as string ||
           "https://i.ibb.co.com/Fz38g1t/human-celebrating.png"
         }
         alt={`${data?.name} image`}
